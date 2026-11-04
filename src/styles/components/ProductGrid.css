@@ -1,0 +1,52 @@
+/* ===== Grid de productos (columna derecha) ===== */
+
+.products-section {
+  flex: 1;       /* ocupa el espacio restante junto al sidebar de filtros */
+  min-width: 0;  /* evita que el grid empuje o se meta debajo del sidebar
+                    (bug clásico de Flexbox: los hijos no se encogen
+                    por debajo de su contenido mínimo) */
+}
+
+.product-grid {
+  display: grid;
+
+  /* auto-fill: crea tantas columnas como quepan, cada una de mínimo
+     200px. 1fr reparte el espacio sobrante equitativamente. */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+/* Mensaje cuando la búsqueda no devuelve resultados.
+   grid-column: 1 / -1 hace que ocupe todas las columnas del grid. */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text, #888);
+}
+
+.empty-sub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text, #aaa);
+  opacity: 0.8;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+  /* Cuando los filtros pasan arriba, los productos ocupan todo el ancho */
+  .products-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Forzamos 3 columnas fijas en móvil para mostrar más productos
+     por fila. Las tarjetas se estrechan y el CSS de ProductCard
+     reduce padding y fuentes para adaptarse. */
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+}

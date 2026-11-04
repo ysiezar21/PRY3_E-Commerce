@@ -1,0 +1,157 @@
+/* ===== Navbar ===== */
+
+.App-header {
+  position: relative; /* contiene los ::before y ::after decorativos */
+  background-color: #0a0a0f;
+
+  /* Dos capas: un halo morado arriba al centro + degradado vertical oscuro */
+  background-image:
+    radial-gradient(ellipse 70% 120% at 50% 0%, rgba(91, 46, 255, 0.22) 0%, transparent 70%),
+    linear-gradient(180deg, #14142a 0%, #0a0a0f 100%);
+
+  color: white;
+
+  /* Línea inferior con degradado morado que se difumina en los bordes */
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, transparent 0%, #5b2eff 50%, transparent 100%) 1;
+
+  /* Sombra exterior morada + luz interior sutil arriba */
+  box-shadow:
+    0 8px 32px rgba(91, 46, 255, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+
+  overflow: hidden; /* recorta los ::before que se salen */
+}
+
+/* Halo morado difuso detrás del contenido */
+.App-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(91, 46, 255, 0.20) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(50px);
+}
+
+/* Línea de luz superior sutil */
+.App-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.20), transparent);
+  pointer-events: none;
+}
+
+.navbar {
+  position: relative; /* por encima de los halos decorativos */
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px 40px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 32px;
+}
+
+.navbar__brand {
+  display: flex;
+  border-radius: 8px;
+}
+
+.navbar__brand:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 4px;
+}
+
+.navbar__logo {
+  height: 84px;
+  width: auto;
+  display: block;
+}
+
+.navbar__search {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Mismo estilo de pastilla que el botón del carrito */
+.navbar__help {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.navbar__help:hover {
+  background: rgba(91, 46, 255, 0.35);
+  border-color: #5b2eff;
+}
+
+.navbar__help:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 12px 20px;
+    gap: 20px;
+  }
+
+  .navbar__logo {
+    height: 68px;
+  }
+}
+
+/* Celular: logo y carrito arriba, búsqueda a lo ancho abajo */
+@media (max-width: 640px) {
+  .navbar {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand actions"
+      "search search";
+    row-gap: 10px;
+    padding: 10px 14px 14px;
+  }
+
+  .navbar__brand { grid-area: brand; }
+  .navbar__search { grid-area: search; }
+  .navbar__actions { grid-area: actions; }
+
+  /* En celular solo el ícono, para no amontonarse con el carrito */
+  .navbar__help {
+    padding: 7px;
+  }
+
+  .navbar__help-text {
+    display: none;
+  }
+
+  .navbar__logo {
+    height: 60px;
+  }
+}

@@ -1,0 +1,183 @@
+/* ===== Filtros: columna izquierda, ancho fijo (desktop) ===== */
+
+.filters-sidebar {
+  flex: 0 0 230px;          /* ancho fijo, no crece ni se encoge */
+  width: 230px;
+  align-self: flex-start;   /* no estirar a la altura del contenedor flex */
+  position: sticky;         /* se queda pegado mientras se hace scroll */
+  top: 24px;
+  max-height: calc(100vh - 48px); /* 48px = 24 arriba + 24 abajo */
+  overflow-y: auto;         /* scroll interno si hay muchos filtros */
+}
+
+.filters-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-h, #1a1a2e);
+  margin-bottom: 22px;
+}
+
+/* Botón para abrir/cerrar filtros: oculto en desktop, se muestra solo en móvil */
+.filters-toggle {
+  display: none;
+}
+
+/* Cada grupo (Precio, Marca, Categoría) con separador inferior */
+.filter-group {
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border, #e5e4e7);
+}
+
+/* El último grupo no lleva separador ni espacio extra */
+.filter-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.filter-group h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-strong, #3b1fa0);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.category-list {
+  list-style: none;
+}
+
+.category-list li {
+  margin-bottom: 10px;
+}
+
+.category-list label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  color: var(--text, #555);
+  cursor: pointer;
+}
+
+.category-list input[type='checkbox'] {
+  accent-color: var(--accent, #5b2eff);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  flex-shrink: 0; /* no se encoge si el label es largo */
+}
+
+/* Contador de resultados a la derecha del label */
+.category-list .count {
+  margin-left: auto;
+  color: var(--text, #999);
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+/* Botón "Mostrar más / Mostrar menos" debajo de cada lista */
+.show-more-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent, #5b2eff);
+  cursor: pointer;
+}
+
+.show-more-button:hover {
+  text-decoration: underline;
+}
+/* ===== Móvil: filtros colapsables mediante botón ===== */
+
+@media (max-width: 900px) {
+  .filters-sidebar {
+    flex:none;
+    width: 100%;
+    position: relative;
+    max-height: none; /* ya no se recorta con scroll interno */
+    overflow: visible;
+    padding: 10px 14px;
+    border: 1px solid var(--border, #e5e4e7);
+    border-radius: 10px;
+    background: var(--code-bg, #f9f9fb);
+  }
+
+  /* En móvil el título va dentro del botón toggle */
+  .filters-title {
+    display: none;
+  }
+
+  .filters-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 6px 2px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-h, #1a1a2e);
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .filters-toggle-icon {
+    font-size: 18px;
+    line-height: 1;
+    color: var(--accent, #5b2eff);
+  }
+
+  /* Contenido colapsado por defecto: no empuja el grid ni tapa nada */
+  .filters-content {
+    display: none;
+  }
+
+  .filters-sidebar.is-open .filters-content {
+    display: block;
+    margin-top: 14px;
+    /* Si hay muchos filtros, hace scroll interno en vez de crecer sin límite */
+    max-height: 340px;
+    overflow-y: auto;
+  }
+
+  .filters-sidebar.is-open .filter-group:first-child {
+    padding-top: 0;
+  }
+
+  /* Todos los tamaños se reducen para que quepan más filtros visibles */
+  .filter-group {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+
+  .filter-group h4 {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .category-list li {
+    margin-bottom: 6px;
+  }
+
+  .category-list label {
+    font-size: 13px;
+    gap: 7px;
+  }
+
+  .category-list input[type='checkbox'] {
+    width: 14px;
+    height: 14px;
+  }
+
+  .category-list .count {
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,156 @@
+/**
+ * Estilos globales de la aplicación.
+ *
+ * Contiene:
+ *   - Reset básico (box-sizing, márgenes)
+ *   - Variables CSS globales (colores, fuentes)
+ *   - Estilos base de html/body/#root
+ *   - Tipografía de encabezados y código
+ */
+
+/* ===== Reset ===== */
+
+/* Aplica box-sizing a todos los elementos para que padding y border
+   no aumenten el ancho total. Evita desbordes en layouts flex/grid. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ===== Variables globales y estilos base ===== */
+
+:root {
+  /* Colores */
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #5b2eff;
+  --accent-strong: #3b1fa0;
+  --accent-bg: rgba(91, 46, 255, 0.12);
+  --accent-border: rgba(91, 46, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  /* Familias tipográficas */
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 16px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light;
+  color: var(--text);
+  background: var(--bg);
+
+  /* Mejoras de renderizado de texto en distintos navegadores */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* El tamaño base ya es 16px; el media query queda como referencia
+     por si en el futuro se necesita ajustar. */
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+/* Quita el margen por defecto del navegador */
+body {
+  margin: 0;
+}
+
+/* Contenedor raíz de React: ocupa todo el ancho y al menos toda la
+   altura del viewport (svh evita el salto en móvil cuando aparece la
+   barra del navegador). */
+#root {
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* El contenido crece y empuja el footer al fondo en páginas cortas */
+.App {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+}
+
+/* ===== Tipografía ===== */
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+/* clamp() hace que el tamaño escale con el viewport entre 1.75rem y 3.5rem */
+h1 {
+  font-size: clamp(1.75rem, 4vw + 1rem, 3.5rem);
+  letter-spacing: -1px;
+  margin: 24px 0;
+}
+
+@media (max-width: 640px) {
+  h1 {
+    letter-spacing: -0.6px;
+    margin: 16px 0;
+  }
+}
+
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+/* ===== Código en línea ===== */
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+
+/* ===== Prevención de scroll horizontal ===== */
+
+/* Cualquier elemento decorativo que sobresalga (halos, gradientes
+   posicionados) no debería generar scroll lateral en móvil. */
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Reserva el espacio de la barra de scroll para que el contenido no se mueva entre páginas */
+html {
+  scrollbar-gutter: stable;
+}

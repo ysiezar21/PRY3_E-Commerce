@@ -1,0 +1,66 @@
+.add-to-cart-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #5b2eff;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.1s ease;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  background: #4a22d9;
+}
+
+.add-to-cart-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.add-to-cart-btn:focus-visible {
+  outline: 2px solid #5b2eff;
+  outline-offset: 2px;
+}
+
+/* Retroalimentación: producto agregado */
+.add-to-cart-btn.is-added {
+  background: #16a34a;
+}
+
+.add-to-cart-btn:disabled {
+  background: #c9c7cf;
+  cursor: not-allowed;
+}
+
+/* Variante grande para la página de detalle */
+.add-to-cart-btn--large {
+  width: auto;
+  padding: 12px 28px;
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  .add-to-cart-btn {
+    margin-top: 6px;
+    padding: 7px 6px;
+    font-size: 12px;
+  }
+
+  .add-to-cart-btn--large {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-to-cart-btn {
+    transition: none;
+  }
+}

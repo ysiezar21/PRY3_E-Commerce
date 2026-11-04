@@ -1,0 +1,93 @@
+/* ===== Mensajes de estado (error inesperado, página no encontrada) ===== */
+
+.status-message {
+  max-width: 540px;
+  margin: 80px auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.status-message__icon {
+  margin: 0 0 14px;
+  font-size: 48px;
+  line-height: 1;
+}
+
+.status-message h2 {
+  margin: 0 0 8px;
+}
+
+.status-message--error h2 {
+  color: #b42318;
+}
+
+.status-message__text {
+  margin: 0 0 22px;
+  color: #6b6b73;
+  line-height: 1.5;
+}
+
+.status-message__debug {
+  display: block;
+  margin-top: 12px;
+  font-size: 12px;
+  font-family: monospace;
+  color: #9a9aa2;
+  overflow-wrap: anywhere;
+}
+
+.status-message__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Mismo estilo que el botón de "Volver al catálogo" del carrito vacío */
+.status-message__button {
+  display: inline-block;
+  padding: 10px 24px;
+  background: #5b2eff;
+  color: #fff;
+  border: 1.5px solid #5b2eff;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.status-message__button:hover {
+  background: #4a22d9;
+  border-color: #4a22d9;
+}
+
+.status-message__button:focus-visible {
+  outline: 2px solid #5b2eff;
+  outline-offset: 2px;
+}
+
+.status-message__button--secondary {
+  background: #fff;
+  color: #555;
+  border-color: #e5e4e7;
+}
+
+.status-message__button--secondary:hover {
+  background: #fff;
+  border-color: #5b2eff;
+  color: #5b2eff;
+}
+
+@media (max-width: 480px) {
+  .status-message {
+    margin: 48px auto;
+  }
+
+  .status-message__actions .status-message__button {
+    width: 100%;
+    text-align: center;
+  }
+}

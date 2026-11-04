@@ -1,0 +1,74 @@
+/* ===== Layout general del catálogo ===== */
+
+.catalog-intro {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 36px 40px 24px;
+}
+
+.catalog-title {
+  margin: 0 0 6px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--text-h, #1a1a2e);
+}
+
+.catalog-subtitle {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+/* Contenedor de dos columnas: filtros a la izquierda, productos a la derecha.
+   align-items: flex-start hace que cada columna mantenga su altura natural
+   (necesario para que el sidebar pueda ser sticky). */
+.results-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 48px;
+  padding: 8px 40px 56px;
+  max-width: 1400px; /* ancho máximo del contenido en pantallas grandes */
+  margin: 0 auto;    /* centra el bloque horizontalmente */
+  width: 100%;
+}
+
+/* ===== Responsive ===== */
+
+/* Tablet y móvil: las columnas pasan a apilarse verticalmente */
+@media (max-width: 900px) {
+  .results-section {
+    flex-direction: column;
+    gap: 28px;
+    padding: 8px 12px 40px;
+  }
+
+  .catalog-intro {
+    padding: 28px 20px 16px;
+  }
+
+  .catalog-title {
+    font-size: 26px;
+  }
+}
+
+/* Móviles estrechos: menos padding lateral para ganar espacio útil */
+@media (max-width: 480px) {
+  .results-section {
+    padding: 8px 10px 32px;
+    gap: 20px;
+  }
+
+  .catalog-intro {
+    padding: 20px 14px 12px;
+  }
+
+  .catalog-title {
+    font-size: 22px;
+  }
+
+  .catalog-subtitle {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,586 @@
+/* ===== Página de detalle de producto ===== */
+
+/* Botón "volver al catálogo" */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  margin-bottom: 28px;
+  background: #fff;
+  border: 1.5px solid #e5e4e7;
+  border-radius: 999px; /* forma de pastilla */
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  letter-spacing: 0.1px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease,
+    gap 0.2s ease;
+}
+
+.product-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.product-detail-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+/* Hover: borde morado, texto morado, fondo muy sutil, flecha se separa */
+.back-button:hover {
+  border-color: #5b2eff;
+  color: #5b2eff;
+  background: rgba(91, 46, 255, 0.06);
+  gap: 12px;
+}
+
+/* Accesibilidad: anillo visible al navegar con teclado */
+.back-button:focus-visible {
+  outline: 2px solid #5b2eff;
+  outline-offset: 2px;
+}
+
+/* ===== Contenedor principal: galería a la izquierda, info a la derecha ===== */
+
+.product-detail-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* dos columnas iguales */
+  gap: 40px;
+  margin-bottom: 40px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #e5e4e7;
+}
+
+/* ===== Galería de imágenes ===== */
+
+.product-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Imagen principal cuadrada, centrada dentro del marco */
+.main-image-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #e5e4e7;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image {
+  /* max-width/height en vez de width/height: si la imagen es más chica
+     que el marco se muestra a su tamaño real (deja espacio en blanco)
+     en lugar de estirarse/escalarse para rellenar todo el cuadro. */
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  padding: 8px;
+}
+
+/* Placeholder cuando no hay imagen */
+.no-image-large {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #e5e4e7;
+  border-radius: 10px;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 16px;
+}
+
+/* Fila de miniaturas. overflow-x: auto permite scroll horizontal
+   si hay muchas imágenes. */
+.thumbnail-gallery {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 2px solid #e5e4e7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* no se encoge aunque no quepan todas */
+  background-color: #fff;
+  padding: 4px;
+}
+
+.thumbnail:hover {
+  border-color: #999;
+}
+
+/* Miniatura seleccionada: borde morado + halo */
+.thumbnail.active {
+  border-color: #5b2eff;
+  box-shadow: 0 0 8px rgba(91, 46, 255, 0.3);
+}
+
+/* ===== Información del producto ===== */
+
+.product-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: flex-start;
+}
+
+.product-header {
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+.product-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.product-brand {
+  font-size: 14px;
+  color: #5b2eff;
+  font-weight: 600;
+  margin: 0;
+}
+
+.product-model {
+  font-size: 13px;
+  color: #666;
+  margin: 4px 0 0 0;
+}
+
+/* Precio y badge de disponibilidad en la misma fila.
+   flex-wrap permite que salten de línea si no caben. */
+.price-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.product-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #5b2eff;
+  margin: 0;
+}
+
+.availability {
+  display: flex;
+  gap: 8px;
+}
+
+.stock-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stock-badge.in-stock {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.stock-badge.out-of-stock {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* ===== Rating ===== */
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.rating-stars {
+  font-size: 16px;
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.review-count {
+  font-size: 13px;
+  color: #999;
+}
+
+/* ===== Descripción ===== */
+
+.description-section {
+  padding: 16px 0;
+}
+
+.product-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ===== Grid de información general (Categoría, SKU, etc.) ===== */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #1a1a2e;
+  font-weight: 500;
+}
+
+/* ===== Características ===== */
+
+.features-section {
+  padding-top: 16px;
+}
+
+.features-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 12px 0;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Cada item con un check morado a la izquierda (usando ::before) */
+.features-list li {
+  font-size: 14px;
+  color: #666;
+  padding-left: 20px;
+  position: relative;
+}
+
+.features-list li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #5b2eff;
+  font-weight: 600;
+}
+
+/* ===== Especificaciones técnicas ===== */
+
+.specifications-section {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #e5e4e7;
+  margin-bottom: 40px;
+
+  /* Sombra morada sutil en reposo */
+  box-shadow:
+    0 0 0 1px rgba(91, 46, 255, 0.10),
+    0 6px 28px rgba(91, 46, 255, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* Hover: sombra más intensa + ligera elevación */
+.specifications-section:hover {
+  box-shadow:
+    0 0 0 1px rgba(91, 46, 255, 0.16),
+    0 10px 40px rgba(91, 46, 255, 0.26),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.specifications-section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px 0;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* Las especificaciones se reparten en 2 columnas */
+.specifications-table {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 48px;
+}
+
+/* Fila: etiqueta a la izquierda, valor a la derecha.
+   align-items: baseline alinea el texto aunque tengan distinto tamaño. */
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.spec-row .spec-label {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0; /* la etiqueta no se encoge aunque el valor sea largo */
+}
+
+.spec-row .spec-value {
+  font-size: 15px;
+  color: #1a1a2e;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ===== Tarjetas de información adicional (garantía, sedes, B2B) ===== */
+
+.additional-info-section-modern {
+  display: grid;
+  /* auto-fit: se acomodan tantas tarjetas como quepan, cada una de
+     mínimo 280px. En móvil colapsa a 1 columna. */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.info-card-modern {
+  background: #fff;
+  border: 1px solid #e5e4e7;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  /* Misma sombra morada que specifications-section */
+  box-shadow:
+    0 0 0 1px rgba(91, 46, 255, 0.10),
+    0 6px 28px rgba(91, 46, 255, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.info-card-modern:hover {
+  box-shadow:
+    0 0 0 1px rgba(91, 46, 255, 0.16),
+    0 10px 40px rgba(91, 46, 255, 0.26),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.info-card-modern h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.info-card-content {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ===== Lista de sedes ===== */
+
+.sedes-list-modern {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sedes-list-modern li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+  padding: 8px 0;
+  border-bottom: 1px dashed #f0f0f0;
+}
+
+.sedes-list-modern li:last-child {
+  border-bottom: none;
+}
+
+.sede-name {
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+/* Badge con la cantidad disponible en cada sede */
+.sede-qty {
+  font-weight: 600;
+  color: #5b2eff;
+  background: #f0ebff;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+/* ===== Contenido B2B ===== */
+
+.b2b-content p {
+  font-size: 14px;
+  color: #555;
+  margin: 6px 0;
+}
+
+.b2b-content strong {
+  color: #1a1a2e;
+}
+
+/* El !important sobreescribe los estilos heredados de .b2b-content p.
+   Se puede limpiar subiendo la especificidad del selector. */
+.b2b-badge {
+  display: inline-block;
+  margin-top: 8px !important;
+  font-size: 12px !important;
+  color: #2e7d32 !important;
+  background: #e8f5e9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* ===== Estados de carga y error ===== */
+
+.product-detail-loading {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+.product-detail-error {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #ffebee;
+  border-radius: 8px;
+  border: 1px solid #ef5350;
+}
+
+.product-detail-error p {
+  font-size: 16px;
+  color: #c62828;
+  margin-bottom: 16px;
+}
+
+.product-detail-error button {
+  background-color: #ef5350;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.product-detail-error button:hover {
+  background-color: #e53935;
+}
+
+/* ===== Responsive ===== */
+
+/* Tablet: galería arriba, info abajo */
+@media (max-width: 1024px) {
+  .product-detail-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+/* Móvil: menos padding, fuentes más pequeñas y grids a 1 columna */
+@media (max-width: 768px) {
+  .product-detail-container {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .product-name {
+    font-size: 24px;
+  }
+
+  .product-price {
+    font-size: 28px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .specifications-table {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
+
+  .additional-info-section-modern {
+    grid-template-columns: 1fr;
+  }
+
+  .specifications-section {
+    padding: 20px;
+  }
+}

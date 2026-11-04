@@ -1,0 +1,79 @@
+/* Mismo degradado del header, invertido */
+.app-footer {
+  background-color: #0a0a0f;
+  background-image:
+    radial-gradient(ellipse 70% 120% at 50% 100%, rgba(91, 46, 255, 0.18) 0%, transparent 70%),
+    linear-gradient(0deg, #14142a 0%, #0a0a0f 100%);
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, transparent 0%, #5b2eff 50%, transparent 100%) 1;
+  padding: 32px 24px 28px;
+  text-align: center;
+}
+
+.app-footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 22px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app-footer__logo {
+  height: 72px;
+  width: auto;
+}
+
+/* Mismo estilo que el slogan del logo original */
+.app-footer__slogan {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #22d3ee;
+}
+
+.app-footer__copyright {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.app-footer__note {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  color: #64748b;
+}
+
+@media (max-width: 480px) {
+  .app-footer__logo {
+    height: 56px;
+  }
+
+  .app-footer__slogan {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+}
+.app-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app-footer__links a {
+  color: #22d3ee;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.app-footer__links a:hover {
+  text-decoration: underline;
+}
