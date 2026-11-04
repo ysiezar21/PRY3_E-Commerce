@@ -29,3 +29,5 @@ if (!appId || !apiKey) {
 
 export const searchClient = algoliasearch(appId, apiKey);
 export const indexName = import.meta.env.VITE_ALGOLIA_INDEX_NAME || 'grupo-06_products';
+
+export const usersIndexName = import.meta.env.VITE_ALGOLIA_USERS_INDEX_NAME || 'grupo-06_users';

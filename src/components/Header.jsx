@@ -5,21 +5,29 @@
  * Estilos en styles/components/Header.css y CartIndicator.css.
  */
 import { useState, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../features/cart/CartContext';
+import { useAuth } from '../features/auth/AuthContext';
 import CartDrawer from '../features/cart/CartDrawer';
 import SearchBar from '../features/catalog/components/SearchBar';
 import logo from '../assets/techgrid-logo.png';
 
 export default function Header() {
   const { totalItems } = useCart();
+  const { currentUser, logout } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { pathname } = useLocation();
+  const { navigate } = useNavigate();
 
   // Sin distracciones durante la compra
   const inCheckout = pathname === '/checkout';
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login'); // Al salir, mandamos al login
+  };
 
   return (
     <>
@@ -40,6 +48,31 @@ export default function Header() {
               </div>
 
               <div className="navbar__actions">
+
+                <div className="navbar__user-zone">
+                  {currentUser ? (
+                    <>
+                      <div className="navbar__user-info">
+                        <span className="navbar__user-name">
+                          {currentUser.name}
+                          <span className={`navbar__role-badge navbar__role-badge--${currentUser.role.toLowerCase()}`}>
+                            {currentUser.role}
+                          </span>
+                        </span>
+                        
+                        {currentUser.role === 'ADMIN' && (
+                          <Link to="/admin" className="navbar__admin-link">Panel Admin</Link>
+                        )}
+                      </div>
+                      <button onClick={handleLogout} className="navbar__logout" title="Cerrar sesión">
+                        Salir
+                      </button>
+                    </>
+                  ) : (
+                    <Link to="/login" className="navbar__login-link">Iniciar Sesión</Link>
+                  )}
+                </div>
+
                 <Link to="/informacion" className="navbar__help" aria-label="Ayuda y políticas">
                   <svg
                     width="20"
