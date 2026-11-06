@@ -10,6 +10,8 @@ import { Configure } from 'react-instantsearch';
 import FiltersSidebar from './components/FiltersSidebar';
 import ProductGrid from './components/ProductGrid';
 import Pagination from './components/Pagination';
+import RecentlyViewed from '../analytics/RecentlyViewed'; // <-- NUEVO
+import RecentSearches from '../analytics/RecentSearches';
 
 const CatalogPage = () => {
   return (
@@ -23,6 +25,11 @@ const CatalogPage = () => {
           Explora componentes, periféricos y equipamiento tecnológico con despacho a todo Costa Rica.
         </p>
       </section>
+
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 40px' }}>
+        <RecentSearches />
+        <RecentlyViewed />
+      </div>
 
       <div className="results-section">
         <FiltersSidebar />

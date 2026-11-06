@@ -1,4 +1,7 @@
+import { useEffect, useRef } from 'react';
 import { formatCRC } from '../cart/formatCurrency';
+import { useAuth } from '../auth/AuthContext';
+import { trackEvent } from '../analytics/analyticsService';
 
 // Fecha larga con hora, en formato costarricense (ej. "16 de octubre de 2026, 14:30").
 const formatDate = (iso) =>
@@ -9,6 +12,18 @@ export default function OrderConfirmation({ order, onContinue }) {
   const { buyer, delivery } = order;
   // El último intento de pago es el que dejó la orden confirmada.
   const payment = order.paymentAttempts.at(-1);
+  const { currentUser } = useAuth();
+  const trackedRef = useRef(false);
+
+  useEffect(() => {
+    if (!trackedRef.current) {
+      trackEvent('PURCHASE', { 
+        orderNumber: order.orderNumber, 
+        total: order.total 
+      }, currentUser);
+      trackedRef.current = true;
+    }
+  }, [order.orderNumber, order.total, currentUser]);
 
   return (
     <section className="order-review order-confirmation">

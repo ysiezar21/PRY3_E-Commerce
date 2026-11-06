@@ -18,7 +18,7 @@
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  background: #f7f7fa;
+  background: var(--bg, #fff);
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
   animation: cart-drawer-slide 0.25s ease;
 }
@@ -33,33 +33,38 @@
   to { transform: translateX(0); }
 }
 
+/* ----- Header ----- */
+
 .cart-drawer__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: #fff;
-  border-bottom: 1px solid #e5e5ea;
+  background: var(--bg, #fff);
+  border-bottom: 1px solid var(--border, #e5e4e7);
 }
 
 .cart-drawer__header h2 {
   margin: 0;
   font-size: 20px;
+  color: var(--text-h, #1a1a2e);
 }
 
 .cart-drawer__close {
   width: 36px;
   height: 36px;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 50%;
   background: none;
   font-size: 18px;
   cursor: pointer;
-  color: #555;
+  color: var(--text, #6b6b73);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .cart-drawer__close:hover {
   background: #f2f2f5;
+  color: var(--text-h, #1a1a2e);
 }
 
 .cart-drawer__close:focus-visible {
@@ -67,14 +72,16 @@
   outline-offset: 2px;
 }
 
-/* Dos clases para ganarle al padding: 0 de .cart-line-list */
+/* ----- Lista scrolleable ----- */
+
 .cart-drawer .cart-drawer__list {
   flex: 1;
   overflow-y: auto;
   padding: 16px 20px;
+  background: #f7f7fa;
 }
 
-/* Las líneas usan el mismo acomodo que la vista móvil del carrito */
+/* Layout compacto de las líneas dentro del drawer (más angosto que el carrito de página) */
 .cart-drawer .cart-line {
   grid-template-columns: 64px 1fr;
   grid-template-areas:
@@ -110,13 +117,15 @@
   justify-self: end;
 }
 
+/* ----- Footer ----- */
+
 .cart-drawer__footer {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 16px 20px 20px;
-  background: #fff;
-  border-top: 1px solid #e5e5ea;
+  background: var(--bg, #fff);
+  border-top: 1px solid var(--border, #e5e4e7);
 }
 
 .cart-drawer__subtotal {
@@ -125,13 +134,15 @@
   align-items: baseline;
   margin: 0 0 4px;
   font-size: 15px;
+  color: var(--text, #6b6b73);
 }
 
 .cart-drawer__subtotal strong {
   font-size: 18px;
-  color: var(--text-h);
+  color: var(--text-h, #1a1a2e);
 }
 
+/* Botones del drawer: misma familia visual que el resto de la app */
 .cart-drawer__primary,
 .cart-drawer__secondary {
   display: block;
@@ -144,6 +155,7 @@
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .cart-drawer__primary {
@@ -156,16 +168,24 @@
   background: #4a22d9;
 }
 
+.cart-drawer__primary:focus-visible,
+.cart-drawer__secondary:focus-visible {
+  outline: 2px solid #5b2eff;
+  outline-offset: 2px;
+}
+
 .cart-drawer__secondary {
-  background: #fff;
-  color: #555;
-  border: 1.5px solid #e5e4e7;
+  background: var(--bg, #fff);
+  color: var(--text, #6b6b73);
+  border: 1.5px solid var(--border, #e5e4e7);
 }
 
 .cart-drawer__secondary:hover {
   border-color: #5b2eff;
   color: #5b2eff;
 }
+
+/* ----- Estado vacío ----- */
 
 .cart-drawer__empty {
   flex: 1;
@@ -175,5 +195,37 @@
   justify-content: center;
   gap: 12px;
   padding: 24px;
-  color: #6b6b73;
+  color: var(--text, #6b6b73);
+}
+
+/* ===== Avisos de reglas B2B y stock de sucursal ===== */
+
+.cart-line__min-order {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0284c7;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.cart-line__branch-stock {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #0284c7;
+  font-weight: 600;
+}
+
+.cart-line__branch-warn {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+/* Feedback visual de botones de cantidad deshabilitados */
+.qty-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: #f2f2f5;
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
 import { fetchUsers } from '../features/auth/authService';
+import { trackEvent } from '../features/analytics/analyticsService';
 import '../styles/pages/LoginPage.css';
 
 export default function LoginPage() {
@@ -34,6 +35,7 @@ export default function LoginPage() {
 
   const handleLogin = (user) => {
     login(user);
+    trackEvent('LOGIN', { role: user.role }, user);
     navigate(user.role === 'ADMIN' ? '/admin' : '/');
   };
 
