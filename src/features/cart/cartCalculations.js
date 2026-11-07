@@ -11,8 +11,6 @@ export function getCartSubtotal(items) {
 }
 
 // Envío: 3% del subtotal, con mínimo ₡2.500, gratis desde ₡400.000.
-// Regla documentada en el README (no viene del catálogo del Proyecto I,
-// que no maneja costos de envío).
 export function getShippingCost(subtotal) {
   if (subtotal <= 0) return 0;
   if (subtotal >= FREE_SHIPPING_THRESHOLD) return 0;
@@ -27,4 +25,23 @@ export function getCartSummary(items) {
   const total = subtotal + iva + shipping;
 
   return { subtotal, iva, shipping, total };
+}
+
+/**
+ * NUEVO: Valida que los productos B2B en el carrito cumplan con la cantidad mínima.
+ * Se usará en el Checkout para bloquear la compra si el usuario bajó la cantidad.
+ */
+export function validateB2BConditions(items) {
+  const invalidItems = items.filter(
+    (item) => item.minimumOrder && item.minimumOrder > 1 && item.quantity < item.minimumOrder
+  );
+  
+  if (invalidItems.length > 0) {
+    return {
+      isValid: false,
+      message: `El producto "${invalidItems[0].name}" requiere un mínimo de ${invalidItems[0].minimumOrder} unidades para precio mayorista.`
+    };
+  }
+  
+  return { isValid: true, message: '' };
 }

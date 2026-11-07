@@ -12,7 +12,7 @@
  * El carrito se vacía únicamente cuando la orden queda confirmada.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../features/cart/CartContext';
 import { getCartSummary } from '../features/cart/cartCalculations';
@@ -30,6 +30,8 @@ import { payOrder } from '../features/orders/payOrder';
 import { fulfillOrder } from '../features/orders/fulfillOrder';
 import { PAYMENT_RESULTS } from '../services/paymentSandbox';
 import { ORDER_RESULTS } from '../services/orderSandbox';
+import { useAuth } from '../features/auth/AuthContext';
+import { trackEvent } from '../features/analytics/analyticsService';
 
 const EMPTY_FORM = {
   fullName: '',
@@ -57,6 +59,7 @@ const formFromOrder = ({ buyer, delivery, termsAccepted }) => ({
 
 export default function CheckoutPage() {
   const { items, clearCart } = useCart();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   // Si quedó una orden con el pago aprobado sin terminar de crear (por ejemplo, tras
   // recargar la página), se retoma en lugar de cobrar otra vez.
@@ -66,6 +69,15 @@ export default function CheckoutPage() {
   const [scenario, setScenario] = useState(PAYMENT_RESULTS.APPROVED);
   const [orderScenario, setOrderScenario] = useState(ORDER_RESULTS.CONFIRMED);
   const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    // Solo registramos si hay items y no es un carrito retomado
+    if (items.length > 0 && !order) {
+      const summary = getCartSummary(items);
+      trackEvent('START_CHECKOUT', { total: summary.total, items: items.length }, currentUser);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Va antes del chequeo de carrito vacío: al confirmarse la orden, el carrito se vacía
   if (order?.orderStatus === ORDER_STATUS.CONFIRMED) {

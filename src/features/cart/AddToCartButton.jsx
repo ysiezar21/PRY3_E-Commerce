@@ -8,9 +8,18 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useCart } from './CartContext';
+import { useAuth } from '../auth/AuthContext';
+import { trackEvent } from '../analytics/analyticsService';
 
-export default function AddToCartButton({ product, className = '' }) {
+export default function AddToCartButton({ 
+  product, 
+  appliedPrice, 
+  minimumOrder = 1, 
+  className = '' 
+}) {
   const { addItem, items } = useCart();
+
+  const { currentUser } = useAuth();
 
   // added: controla el feedback visual "✓ Agregado".
   // timerRef: guarda el timeout para poder limpiarlo al desmontar o al
@@ -27,16 +36,20 @@ export default function AddToCartButton({ product, className = '' }) {
 
   // outOfStock: el producto no tiene stock en absoluto.
   // noMoreStock: sí hay stock, pero ya se agregó todo lo disponible.
+  // insufficientStock: es B2B, pero no hay suficiente stock para el mínimo requerido.
   const outOfStock = product.stock <= 0;
+  const insufficientStock = product.stock < minimumOrder;
   const noMoreStock = !outOfStock && inCart >= product.stock;
 
   const handleClick = (e) => {
     // La tarjeta del catálogo entera es clicable (navega al detalle):
     // sin esto, agregar al carrito también abriría el detalle.
     e.stopPropagation();
-    if (outOfStock || noMoreStock) return;
+    if (outOfStock || noMoreStock || insufficientStock) return;
 
-    addItem(product);
+    // Enviamos el precio calculado (B2C o B2B) y la cantidad mínima
+    addItem(product, appliedPrice, minimumOrder);
+    trackEvent('ADD_TO_CART', { productId: product.id, name: product.name }, currentUser);
     setAdded(true);
 
     // Reiniciamos el temporizador en cada click para que el feedback
@@ -50,14 +63,16 @@ export default function AddToCartButton({ product, className = '' }) {
       type="button"
       className={`add-to-cart-btn ${added ? 'is-added' : ''} ${className}`}
       onClick={handleClick}
-      disabled={outOfStock || noMoreStock}
+      disabled={outOfStock || noMoreStock || insufficientStock}
       // aria-live="polite" anuncia el cambio de texto a los lectores de
       // pantalla sin interrumpir lo que estén leyendo.
       aria-live="polite"
     >
-      {/* Prioridad del texto: agotado > sin más stock > feedback > acción. */}
+      {/* Prioridad del texto: agotado > stock insuficiente > sin más stock > feedback > acción. */}
       {outOfStock
         ? 'Agotado'
+        : insufficientStock
+        ? 'Sin stock para mayoreo'
         : noMoreStock
         ? '✗ No hay más stock'
         : added

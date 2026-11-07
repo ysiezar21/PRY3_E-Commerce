@@ -8,6 +8,8 @@
 
 import { useNavigate } from 'react-router-dom';
 import { useInstantSearch } from 'react-instantsearch';
+import { useAuth } from '../../auth/AuthContext'; // <-- NUEVO
+import { getPricingForUser } from '../pricing'; // <-- NUEVO
 import AddToCartButton from '../../cart/AddToCartButton';
 
 // Formatea un número como colón costarricense sin decimales.
@@ -30,6 +32,10 @@ const getCategoryLabel = (hit) => {
 const ProductCard = ({ hit }) => {
   const navigate = useNavigate();
   const { uiState } = useInstantSearch();
+  const { currentUser } = useAuth(); // <-- Obtenemos el usuario logueado
+
+  // Calculamos el precio, si es B2B y la cantidad mínima requerida
+  const { price, isB2B, minimumOrder } = getPricingForUser(hit, currentUser);
 
   const handleProductClick = () => {
     // Guarda la página actual del catálogo en la URL del detalle para
@@ -49,8 +55,21 @@ const ProductCard = ({ hit }) => {
       <div className="product-info">
         <h3>{hit.name}</h3>
         <p className="category">{getCategoryLabel(hit)}</p>
-        <p className="price">{formatCRC(hit.price)}</p>
-        <AddToCartButton product={hit} />
+        
+        {isB2B && (
+          <div className="b2b-tag">
+            Mayorista (Mín. {minimumOrder})
+          </div>
+        )}
+
+        <p className="price">{formatCRC(price)}</p>
+        
+        {/* Le pasamos el precio calculado y la cantidad mínima al botón */}
+        <AddToCartButton 
+          product={hit} 
+          appliedPrice={price} 
+          minimumOrder={minimumOrder} 
+        />
       </div>
     </div>
   );

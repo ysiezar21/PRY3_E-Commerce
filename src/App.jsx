@@ -1,6 +1,7 @@
 import "./styles/index.js";
 import { HashRouter } from "react-router-dom";
 import MainLayout from "./pages/MainLayout";
+import { AuthProvider } from "./features/auth/AuthContext";
 import CartProvider from "./features/cart/CartProvider";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -15,9 +16,11 @@ export default function App() {
   return (
     <ErrorBoundary>
       <HashRouter>
-        <CartProvider>
-          <MainLayout />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <MainLayout />
+          </CartProvider>
+        </AuthProvider>
       </HashRouter>
     </ErrorBoundary>
   );
