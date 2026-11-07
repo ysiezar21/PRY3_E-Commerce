@@ -36,6 +36,8 @@ import ReturnsPage from "../features/info/ReturnsPage";
 import ShippingPage from "../features/info/ShippingPage";
 import PrivacyPage from "../features/info/PrivacyPage";
 import FaqPage from "../features/info/FaqPage";
+import LoginPage from './LoginPage';
+import AnalyticsPage from './AnalyticsPage';
 
 export default function MainLayout() {
   const { pathname } = useLocation();
@@ -58,6 +60,8 @@ export default function MainLayout() {
               <Route path="/privacidad" element={<PrivacyPage />} />
               <Route path="/faq" element={<FaqPage />} />
               <Route path="*" element={<NotFoundPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
             </Routes>
           </ErrorBoundary>
         </main>

@@ -6,6 +6,7 @@
  *   2. Si no existe en Algolia o falla la conexión, busca en el
  *      archivo local data/products.json como respaldo.
  *
+ * Adapta el precio y la información B2B según el rol del usuario.
  * Lee el id desde la URL (/producto/:id) y, al volver al catálogo,
  * conserva el ?page=N que ProductCard añadió para restaurar la página.
  */
@@ -15,8 +16,11 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { searchClient, indexName } from '../config/algolia';
 import productsData from '../../data/products.json';
 import AddToCartButton from '../features/cart/AddToCartButton';
+import { useAuth } from '../features/auth/AuthContext';
+import { getPricingForUser } from '../features/catalog/pricing';
+import { BRANCHES, getStockAtBranch } from '../features/branches/branches';
+import { trackProductView } from '../features/analytics/analyticsService';
 
-// Formatea un número como colón costarricense sin decimales.
 const formatCRC = (value) =>
   new Intl.NumberFormat('es-CR', {
     style: 'currency',
@@ -28,6 +32,8 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useAuth();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,7 +45,6 @@ export default function ProductDetail() {
       setError(null);
 
       try {
-        // Búsqueda directa por objectID en Algolia.
         const index = searchClient.initIndex(indexName);
         const response = await index.search('', {
           filters: `objectID:"${id}"`,
@@ -48,22 +53,19 @@ export default function ProductDetail() {
 
         if (response.hits.length > 0) {
           setProduct(response.hits[0]);
+          trackProductView(response.hits[0], currentUser);
           setSelectedImageIndex(0);
         } else {
-          // No está en el índice: buscar en el JSON local.
           loadProductFromLocal(id);
         }
       } catch (err) {
         console.error('Error fetching from Algolia:', err);
-        // Si Algolia falla, intentar con el respaldo local.
         loadProductFromLocal(id);
       } finally {
         setLoading(false);
       }
     };
 
-    // Respaldo: busca el producto en data/products.json.
-    // Acepta el JSON como { products: [...] } o como array directo.
     const loadProductFromLocal = (productId) => {
       try {
         const products = productsData.products || productsData;
@@ -86,7 +88,6 @@ export default function ProductDetail() {
     }
   }, [id]);
 
-  // Vuelve al catálogo conservando el ?page si venía en la URL.
   const handleBack = () => {
     const params = new URLSearchParams(location.search);
     const page = params.get('page');
@@ -119,6 +120,9 @@ export default function ProductDetail() {
   const images = product.images || [];
   const currentImage = images[selectedImageIndex] || null;
 
+  // Precio y condiciones según el rol del usuario actual.
+  const { price, isB2B, minimumOrder } = getPricingForUser(product, currentUser);
+
   return (
     <div className="product-detail-page">
       <div className="product-detail-header">
@@ -127,9 +131,7 @@ export default function ProductDetail() {
           ← Volver al catálogo
         </button>
       </div>
-      
 
-      {/* Bloque principal: galería a la izquierda, info a la derecha */}
       <div className="product-detail-container">
         <div className="product-gallery">
           {currentImage ? (
@@ -140,7 +142,6 @@ export default function ProductDetail() {
             <div className="no-image-large">Sin imagen</div>
           )}
 
-          {/* Miniaturas: solo si hay más de una imagen */}
           {images.length > 1 && (
             <div className="thumbnail-gallery">
               {images.map((img, idx) => (
@@ -164,16 +165,25 @@ export default function ProductDetail() {
           </div>
 
           <div className="price-section">
-            <p className="product-price">{formatCRC(product.price)}</p>
+            {isB2B && (
+              <p className="product-price-tag">
+                Precio mayorista · Mín. {minimumOrder} uds
+              </p>
+            )}
+            <p className="product-price">{formatCRC(price)}</p>
             <div className="availability">
               <span className={`stock-badge ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                {product.stock > 0 ? `${product.stock} en stock` : 'Agotado'}
+                {product.stock > 0 ? `${product.stock} en stock total` : 'Agotado'}
               </span>
             </div>
           </div>
 
-          <AddToCartButton product={product} className="add-to-cart-btn--large" />
-
+          <AddToCartButton
+            product={product}
+            appliedPrice={price}
+            minimumOrder={minimumOrder}
+            className="add-to-cart-btn--large"
+          />
 
           {product.rating && (
             <div className="rating-section">
@@ -218,7 +228,6 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Tabla de especificaciones técnicas */}
       {product.specifications && product.specifications.length > 0 && (
         <div className="specifications-section">
           <h2>Especificaciones técnicas</h2>
@@ -233,7 +242,6 @@ export default function ProductDetail() {
         </div>
       )}
 
-      {/* Tarjetas: garantía, sedes y B2B */}
       <div className="additional-info-section-modern">
         {product.warranty && (
           <div className="info-card-modern">
@@ -242,33 +250,34 @@ export default function ProductDetail() {
           </div>
         )}
 
-        {product.multi_sede && Object.keys(product.multi_sede).length > 0 && (
+        {product.multi_sede && (
           <div className="info-card-modern">
             <h3>Disponibilidad en sedes</h3>
             <ul className="sedes-list-modern">
-              {Object.entries(product.multi_sede).map(([sede, qty]) => (
-                <li key={sede} className={qty === 0 ? 'sede-agotada' : ''}>
-                  {/* Capitaliza el nombre de la sede */}
-                  <span className="sede-name">
-                    {sede.charAt(0).toUpperCase() + sede.slice(1)}
-                  </span>
-                  {qty > 0 ? (
-                    <span className="sede-qty">{qty} unidades</span>
-                  ) : (
-                    <span className="sede-qty-out">Agotado</span>
-                  )}
-                </li>
-              ))}
+              {BRANCHES.map((branch) => {
+                const qty = getStockAtBranch(product, branch.id);
+                return (
+                  <li key={branch.id} className={qty === 0 ? 'sede-agotada' : ''}>
+                    <span className="sede-name">{branch.name}</span>
+                    {qty > 0 ? (
+                      <span className="sede-qty">{qty} unidades</span>
+                    ) : (
+                      <span className="sede-qty-out">Agotado</span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
 
-        {product.b2b_info && (
+        {/* Solo se muestra a usuarios B2B: para un B2C no aplica. */}
+        {isB2B && product.b2b_info && (
           <div className="info-card-modern">
-            <h3>Información B2B</h3>
+            <h3>Condiciones mayoristas</h3>
             <div className="b2b-content">
               <p>
-                <strong>Precio mayorista:</strong>{' '}
+                <strong>Tu precio B2B:</strong>{' '}
                 {formatCRC(product.b2b_info.wholesale_price)}
               </p>
               <p>

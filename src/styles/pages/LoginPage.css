@@ -1,0 +1,189 @@
+/* ===== Layout general de la página de Login ===== */
+
+.login-page {
+  max-width: 1200px; /* Un poco más angosto que el catálogo (1400) */
+  width: 100%;
+  margin: 0 auto;
+  padding: 36px 40px 56px;
+}
+
+.login-header {
+  margin-bottom: 32px;
+}
+
+.login-header h1 {
+  margin: 0 0 6px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--text-h, #1a1a2e);
+}
+
+.login-header p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text, #6b6b73);
+}
+
+/* ===== Grid de Tarjetas de Usuario ===== */
+
+.login-users-grid {
+  display: grid;
+  /* Mismo tamaño base que las tarjetas de producto */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+/* Tarjeta individual (Basada en .product-card) */
+.login-user-card {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background: var(--bg, #fff);
+  border: 1px solid var(--border, #e5e4e7);
+  border-radius: 12px;
+  padding: 20px 16px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+/* Hover idéntico al de las ProductCard */
+.login-user-card:hover {
+  border-color: rgba(124, 92, 255, 0.55);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px -10px rgba(91, 46, 255, 0.35);
+}
+
+.login-user-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px; /* Evita que el nombre y el badge se peguen */
+}
+
+.login-user-card__header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-h, #1a1a2e);
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Máximo 2 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Badges de Rol */
+.login-user-card__role {
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.login-user-card__role--b2c { 
+  background: #f2f2f5; 
+  color: #4a4a52; 
+}
+.login-user-card__role--b2b { 
+  background: #e0f2fe; 
+  color: #0284c7; 
+}
+.login-user-card__role--admin { 
+  background: #f3e8ff; 
+  color: #7e22ce; 
+}
+
+/* Textos inferiores */
+.login-user-card__email {
+  margin: 0 0 6px 0;
+  color: var(--text, #6b6b73);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.login-user-card__company {
+  margin: 0;
+  font-size: 13px;
+  color: #6366f1; /* Mismo color que la categoría en ProductCard */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto; /* Empuja la empresa al fondo igual que el precio */
+  padding-top: 10px;
+}
+
+/* ===== Estados (Cargando / Error) ===== */
+
+.login-state {
+  text-align: center;
+  padding: 80px 20px;
+  font-size: 16px;
+  color: var(--text, #6b6b73);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.login-state--error {
+  color: #d32f2f;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px;
+  min-height: auto;
+}
+
+/* ===== Responsive (Igualando los breakpoints del catálogo) ===== */
+
+@media (max-width: 900px) {
+  .login-page {
+    padding: 28px 20px 40px;
+  }
+
+  .login-header h1 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 20px 14px 32px;
+  }
+
+  .login-header h1 {
+    font-size: 22px;
+  }
+
+  .login-header p {
+    font-size: 14px;
+  }
+  
+  .login-users-grid {
+    grid-template-columns: 1fr; /* Una sola columna en móviles */
+    gap: 16px;
+  }
+}
+
+/* Respeta la preferencia del usuario de reducir animaciones */
+@media (prefers-reduced-motion: reduce) {
+  .login-user-card {
+    transition: none;
+  }
+
+  .login-user-card:hover {
+    transform: none;
+  }
+}

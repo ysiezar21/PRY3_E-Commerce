@@ -34,7 +34,121 @@
   width: 100%;
 }
 
-/* ===== Responsive ===== */
+/* Personalización */
+.personalization-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #000000;
+  margin: 20px 0 12px;
+}
+
+.recently-viewed-section { margin-bottom: 20px; }
+
+.personalization-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.mini-product-card {
+  min-width: 100px;
+  max-width: 120px;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+}
+
+.mini-product-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border: 1px solid #e5e4e7;
+  border-radius: 8px;
+  padding: 4px;
+  background: #fff;
+}
+
+.mini-product-name {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 6px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.personalization-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.search-pill {
+  background: #fff;
+  border: 1px solid #e5e4e7;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.search-pill:hover {
+  border-color: #5b2eff;
+  color: #5b2eff;
+  background: rgba(91, 46, 255, 0.05);
+}
+
+/* ===== Bloque de personalización ===== */
+
+.catalog-personalization {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.catalog-personalization__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 20px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--text-h, #1a1a2e);
+  text-decoration: none;
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.catalog-personalization__link:hover {
+  color: var(--accent, #5b2eff);
+  gap: 14px;
+}
+
+.catalog-personalization__link:focus-visible {
+  outline: 2px solid var(--accent, #5b2eff);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Responsive: mismos breakpoints que el resto del catálogo */
+@media (max-width: 900px) {
+  .catalog-personalization {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .catalog-personalization {
+    padding: 0 14px;
+  }
+  .catalog-personalization__link {
+    font-size: 16px;
+  }
+}
 
 /* Tablet y móvil: las columnas pasan a apilarse verticalmente */
 @media (max-width: 900px) {

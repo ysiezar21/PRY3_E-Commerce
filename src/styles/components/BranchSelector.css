@@ -1,0 +1,40 @@
+.branch-selector {
+  background: #fff;
+  border: 1px solid var(--border, #e5e4e7);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.branch-selector__label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-h, #1a1a2e);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.branch-selector__select {
+  padding: 10px 14px;
+  border: 1.5px solid #e5e4e7;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  cursor: pointer;
+}
+
+.branch-selector__select:focus {
+  outline: 2px solid #5b2eff;
+  outline-offset: 2px;
+  border-color: #5b2eff;
+}
+
+.branch-selector__hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b6b73;
+}
