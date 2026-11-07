@@ -110,7 +110,7 @@ export function getMetrics(currentUser = null) {
   const events = getEvents(currentUser);
   
   return {
-    productsViewed: events.filter(e => e.type === 'VIEW_PRODUCT').length,
+    productsViewed: events.filter(e => e.type === 'VIEW_PRODUCT').length/2,
     searches: events.filter(e => e.type === 'SEARCH').length,
     addedToCart: events.filter(e => e.type === 'ADD_TO_CART').length,
     purchases: events.filter(e => e.type === 'PURCHASE').length,

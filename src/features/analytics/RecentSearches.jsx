@@ -21,9 +21,9 @@ export default function RecentSearches() {
     <div className="recent-searches-section">
       <h3 className="personalization-title">Búsquedas recientes</h3>
       <div className="personalization-pills">
-        {searches.map((term, i) => (
+        {searches.reverse().slice(-3).reverse().map((term, i) => (
           <button key={i} onClick={() => handleSearchClick(term)} className="search-pill">
-            🔍 {term}
+            {term}
           </button>
         ))}
       </div>

@@ -12,7 +12,7 @@ export default function RecentlyViewed() {
     <div className="recently-viewed-section">
       <h3 className="personalization-title">Vistos recientemente</h3>
       <div className="personalization-scroll">
-        {viewed.map((product) => (
+        {viewed.reverse().slice(-3).reverse().map((product) => (
           <Link to={`/producto/${product.id}`} key={product.id} className="mini-product-card">
             <p className="mini-product-name">{product.name}</p>
           </Link>
