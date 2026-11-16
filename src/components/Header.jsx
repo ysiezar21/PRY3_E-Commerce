@@ -17,7 +17,7 @@ export default function Header() {
   const { currentUser, logout } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { pathname } = useLocation();
-  const { navigate } = useNavigate();
+  const navigate = useNavigate();
 
   // Sin distracciones durante la compra
   const inCheckout = pathname === '/checkout';
