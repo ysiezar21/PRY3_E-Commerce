@@ -9,6 +9,8 @@
  *   - "/producto/:id"  → detalle de un producto.
  *   - "/carrito"       → carrito de compras.
  *   - "/checkout"      → proceso de compra.
+ *   - "/admin"         → panel administrativo (solo rol ADMIN).
+ *   "/carrito" y "/checkout" requieren un cliente B2C o B2B con sesión.
  *   - "/informacion"   → centro de información (índice de políticas).
  *   - "/terminos", "/devoluciones", "/envios", "/privacidad", "/faq"
  *                      → páginas informativas.
@@ -38,6 +40,9 @@ import PrivacyPage from "../features/info/PrivacyPage";
 import FaqPage from "../features/info/FaqPage";
 import LoginPage from './LoginPage';
 import AnalyticsPage from './AnalyticsPage';
+import AdminPage from './AdminPage';
+import RequirePermission from '../features/auth/RequirePermission';
+import { PERMISSIONS } from '../features/auth/permissions';
 
 export default function MainLayout() {
   const { pathname } = useLocation();
@@ -51,8 +56,31 @@ export default function MainLayout() {
             <Routes>
               <Route path="/" element={<CatalogPage />} />
               <Route path="/producto/:id" element={<ProductDetail />} />
-              <Route path="/carrito" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
+              {/* Rutas protegidas por rol (RBAC): ver features/auth/permissions.js */}
+              <Route
+                path="/carrito"
+                element={
+                  <RequirePermission permission={PERMISSIONS.ADD_TO_CART} area="el carrito de compras">
+                    <CartPage />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <RequirePermission permission={PERMISSIONS.CHECKOUT} area="el proceso de compra">
+                    <CheckoutPage />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <RequirePermission permission={PERMISSIONS.VIEW_ADMIN_INFO} area="el panel administrativo">
+                    <AdminPage />
+                  </RequirePermission>
+                }
+              />
               <Route path="/informacion" element={<InfoHubPage />} />
               <Route path="/terminos" element={<TermsPage />} />
               <Route path="/devoluciones" element={<ReturnsPage />} />
