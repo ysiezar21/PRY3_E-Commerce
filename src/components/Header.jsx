@@ -8,13 +8,17 @@ import { useState, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../features/cart/CartContext';
 import { useAuth } from '../features/auth/AuthContext';
+import { PERMISSIONS, getRoleInfo } from '../features/auth/permissions';
 import CartDrawer from '../features/cart/CartDrawer';
 import SearchBar from '../features/catalog/components/SearchBar';
 import logo from '../assets/techgrid-logo.png';
 
 export default function Header() {
   const { totalItems } = useCart();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, can } = useAuth();
+  const roleInfo = getRoleInfo(currentUser);
+  // El carrito solo existe para los roles que pueden comprar (B2C y B2B).
+  const canUseCart = can(PERMISSIONS.ADD_TO_CART);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -55,15 +59,30 @@ export default function Header() {
                       <div className="navbar__user-info">
                         <span className="navbar__user-name">
                           {currentUser.name}
-                          <span className={`navbar__role-badge navbar__role-badge--${currentUser.role.toLowerCase()}`}>
+                          <span
+                            className={`navbar__role-badge navbar__role-badge--${currentUser.role.toLowerCase()}`}
+                            title={`Rol: ${roleInfo.label}`}
+                          >
                             {currentUser.role}
                           </span>
                         </span>
-                        
-                        {currentUser.role === 'ADMIN' && (
-                          <Link to="/admin" className="navbar__admin-link">Panel Admin</Link>
+
+                        {/* Tipo de usuario y, para B2B, la empresa */}
+                        <span className="navbar__user-type">
+                          {roleInfo.userType}
+                          {currentUser.role === 'B2B' && currentUser.company ? ` · ${currentUser.company}` : ''}
+                        </span>
+
+                        {can(PERMISSIONS.VIEW_ADMIN_INFO) && (
+                          <Link to="/admin" className="navbar__admin-link">Ir al panel</Link>
                         )}
                       </div>
+                      {/* En pantallas pequeñas el nombre se oculta: el rol queda visible aquí */}
+                      <span
+                        className={`navbar__role-badge navbar__role-badge--compact navbar__role-badge--${currentUser.role.toLowerCase()}`}
+                      >
+                        {currentUser.role}
+                      </span>
                       <button onClick={handleLogout} className="navbar__logout" title="Cerrar sesión">
                         Salir
                       </button>
@@ -92,31 +111,34 @@ export default function Header() {
                   <span className="navbar__help-text">Ayuda</span>
                 </Link>
 
-                <button
-                  type="button"
-                  className="cart-indicator"
-                  onClick={() => setDrawerOpen(true)}
-                  aria-label={`Abrir carrito, ${totalItems} ${totalItems === 1 ? 'unidad' : 'unidades'}`}
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
+                {/* El administrador no compra: no ve el carrito */}
+                {canUseCart && (
+                  <button
+                    type="button"
+                    className="cart-indicator"
+                    onClick={() => setDrawerOpen(true)}
+                    aria-label={`Abrir carrito, ${totalItems} ${totalItems === 1 ? 'unidad' : 'unidades'}`}
                   >
-                    <circle cx="9" cy="21" r="1" />
-                    <circle cx="20" cy="21" r="1" />
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                  </svg>
-                  <span className="cart-indicator__count">
-                    {totalItems > 99 ? '99+' : totalItems}
-                  </span>
-                </button>
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="9" cy="21" r="1" />
+                      <circle cx="20" cy="21" r="1" />
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                    </svg>
+                    <span className="cart-indicator__count">
+                      {totalItems > 99 ? '99+' : totalItems}
+                    </span>
+                  </button>
+                )}
               </div>
             </>
           )}
@@ -124,7 +146,7 @@ export default function Header() {
       </header>
 
       {/* Fuera del <header> para no heredar sus estilos */}
-      <CartDrawer open={drawerOpen} onClose={closeDrawer} />
+      {canUseCart && <CartDrawer open={drawerOpen} onClose={closeDrawer} />}
     </>
   );
 }

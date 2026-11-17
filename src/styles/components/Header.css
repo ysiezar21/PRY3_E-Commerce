@@ -166,8 +166,8 @@
 }
 
 .navbar__role-badge--b2c {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #e5e7eb;
+  background-color: rgba(129, 140, 248, 0.18); /* Índigo sutil */
+  color: #a5b4fc;
 }
 
 .navbar__role-badge--b2b {
@@ -267,5 +267,23 @@
 
   .navbar__logo {
     height: 60px;
+  }
+}
+
+/* ===== Tipo de usuario y empresa bajo el nombre ===== */
+
+.navbar__user-type {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* En pantallas pequeñas se oculta el nombre, pero el rol debe seguir visible */
+.navbar__role-badge--compact {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .navbar__role-badge--compact {
+    display: inline-block;
   }
 }
