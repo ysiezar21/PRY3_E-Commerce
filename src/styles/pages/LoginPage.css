@@ -88,8 +88,8 @@
 }
 
 .login-user-card__role--b2c { 
-  background: #f2f2f5; 
-  color: #4a4a52; 
+  background: #e0e7ff;
+  color: #4338ca;
 }
 .login-user-card__role--b2b { 
   background: #e0f2fe; 
@@ -186,4 +186,28 @@
   .login-user-card:hover {
     transform: none;
   }
+}
+/* ===== Inicio de sesión rechazado y datos de rol ===== */
+
+.login-error {
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border: 1px solid #f5c2c0;
+  border-radius: 8px;
+  background: #ffebee;
+  color: #b42318;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-user-card__role--invalid {
+  background: #ffebee;
+  color: #b42318;
+}
+
+.login-user-card__type {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h, #1a1a2e);
 }
