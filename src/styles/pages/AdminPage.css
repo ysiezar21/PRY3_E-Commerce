@@ -186,3 +186,128 @@
     font-size: 26px;
   }
 }
+
+/* ===== Productos e inventario ===== */
+
+.admin-section__notice {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f3e8ff;
+  color: #6b21a8;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.admin-section__success {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.admin-section__error {
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b42318;
+  white-space: normal;
+}
+
+.admin-section__more {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--text, #6b6b73);
+}
+
+.admin-section__filters .admin-section__checkbox {
+  flex-direction: row;
+  align-items: center;
+  align-self: flex-end;
+  gap: 8px;
+  padding-bottom: 10px;
+}
+
+.admin-section__filters .admin-section__checkbox input {
+  min-width: 0;
+  width: auto;
+}
+
+.admin-section__price-input {
+  width: 120px;
+  padding: 6px 8px;
+  border: 1px solid var(--border, #e5e4e7);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.admin-section__row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-button {
+  padding: 6px 12px;
+  border: 1px solid var(--accent, #5b2eff);
+  border-radius: 6px;
+  background: var(--accent, #5b2eff);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-button--secondary {
+  background: #fff;
+  color: var(--accent, #5b2eff);
+}
+
+.admin-button:focus-visible {
+  outline: 2px solid var(--accent, #5b2eff);
+  outline-offset: 2px;
+}
+
+.admin-pill {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f3e8ff;
+  color: #7e22ce;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-pill--warn {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.admin-stock--out {
+  color: #b42318;
+  font-weight: 600;
+}
+
+.admin-history {
+  margin-top: 32px;
+}
+
+.admin-history__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-history__header h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-h, #1a1a2e);
+}
