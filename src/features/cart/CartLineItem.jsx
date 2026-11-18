@@ -3,6 +3,7 @@ import { useCart } from './CartContext';
 import { getLineSubtotal } from './cartCalculations';
 import { formatCRC } from './formatCurrency';
 import { getBranchName } from '../branches/branches';
+import { getPriceTypeLabel, PRICE_TYPES } from '../catalog/pricing';
 import ConfirmDialog from '../../components/ConfirmDialog';
 
 /**
@@ -24,6 +25,9 @@ export default function CartLineItem({ item }) {
   // Mínimo permitido según el rol (1 para B2C, N para productos B2B).
   const minQuantity = item.minimumOrder || 1;
   const isAtMinimum = item.quantity <= minQuantity;
+
+  // Tipo de precio aplicado (B2C o B2B).
+  const priceType = item.priceType || PRICE_TYPES.B2C;
 
   // Stock disponible según la sucursal elegida (o total si no hay sucursal).
   const branchStock = branchId
@@ -48,6 +52,9 @@ export default function CartLineItem({ item }) {
       <div className="cart-line__info">
         <p className="cart-line__name">{item.name}</p>
         <p className="cart-line__unit-price">{formatCRC(item.price)} c/u</p>
+        <p className={`cart-line__price-type cart-line__price-type--${priceType.toLowerCase()}`}>
+          {getPriceTypeLabel(priceType)}
+        </p>
 
         {minQuantity > 1 && (
           <p className="cart-line__min-order">

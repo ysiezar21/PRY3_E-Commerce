@@ -121,7 +121,7 @@ export default function ProductDetail() {
   const currentImage = images[selectedImageIndex] || null;
 
   // Precio y condiciones según el rol del usuario actual.
-  const { price, isB2B, minimumOrder } = getPricingForUser(product, currentUser);
+  const { price, priceType, isB2B, minimumOrder, isValid, notice } = getPricingForUser(product, currentUser);
 
   return (
     <div className="product-detail-page">
@@ -170,7 +170,8 @@ export default function ProductDetail() {
                 Precio mayorista · Mín. {minimumOrder} uds
               </p>
             )}
-            <p className="product-price">{formatCRC(price)}</p>
+            {notice && <p className="product-price-notice">{notice}</p>}
+            {isValid && <p className="product-price">{formatCRC(price)}</p>}
             <div className="availability">
               <span className={`stock-badge ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
                 {product.stock > 0 ? `${product.stock} en stock total` : 'Agotado'}
@@ -182,6 +183,8 @@ export default function ProductDetail() {
             product={product}
             appliedPrice={price}
             minimumOrder={minimumOrder}
+            priceType={priceType}
+            priceAvailable={isValid}
             className="add-to-cart-btn--large"
           />
 

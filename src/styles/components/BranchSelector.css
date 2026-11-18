@@ -1,40 +1,110 @@
+/* ===== Selector de sucursal (checkout) ===== */
+
 .branch-selector {
-  background: #fff;
-  border: 1px solid var(--border, #e5e4e7);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-.branch-selector__label {
-  font-size: 13px;
+.branch-selector__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h, #1a1a2e);
+}
+
+.branch-selector__options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.branch-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1.5px solid var(--border, #e5e4e7);
+  border-radius: 10px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.branch-card:hover:not(:disabled) {
+  border-color: var(--accent-border, rgba(91, 46, 255, 0.5));
+}
+
+.branch-card.is-selected {
+  border-color: var(--accent, #5b2eff);
+  background: var(--accent-bg, rgba(91, 46, 255, 0.08));
+}
+
+.branch-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.branch-card:focus-visible {
+  outline: 2px solid var(--accent, #5b2eff);
+  outline-offset: 2px;
+}
+
+.branch-card__name {
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-h, #1a1a2e);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
 }
 
-.branch-selector__select {
-  padding: 10px 14px;
-  border: 1.5px solid #e5e4e7;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-  background: #fff;
-  cursor: pointer;
-}
-
-.branch-selector__select:focus {
-  outline: 2px solid #5b2eff;
-  outline-offset: 2px;
-  border-color: #5b2eff;
-}
-
-.branch-selector__hint {
-  margin: 4px 0 0;
+.branch-card__status {
   font-size: 12px;
-  color: #6b6b73;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.branch-card__status.is-out {
+  color: #b42318;
+}
+
+.branch-selector__error {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b42318;
+}
+
+/* Lista de disponibilidad por producto */
+.branch-selector__stock {
+  list-style: none;
+  margin: 0;
+  padding: 10px 14px;
+  background: #f8f8fb;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.branch-selector__stock li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.branch-selector__stock li span:last-child {
+  color: var(--text, #6b6b73);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .branch-selector__options {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .branch-selector__stock li {
+    flex-direction: column;
+    gap: 0;
+  }
 }

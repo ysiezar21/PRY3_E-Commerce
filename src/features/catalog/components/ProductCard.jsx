@@ -35,7 +35,7 @@ const ProductCard = ({ hit }) => {
   const { currentUser } = useAuth(); // <-- Obtenemos el usuario logueado
 
   // Calculamos el precio, si es B2B y la cantidad mínima requerida
-  const { price, isB2B, minimumOrder } = getPricingForUser(hit, currentUser);
+  const { price, priceType, isB2B, minimumOrder, isValid, notice } = getPricingForUser(hit, currentUser);
 
   const handleProductClick = () => {
     // Guarda la página actual del catálogo en la URL del detalle para
@@ -62,13 +62,18 @@ const ProductCard = ({ hit }) => {
           </div>
         )}
 
-        <p className="price">{formatCRC(price)}</p>
-        
+        {/* Aviso de precio inválido */}
+        {notice && <p className="price-notice">{notice}</p>}
+
+        {isValid && <p className="price">{formatCRC(price)}</p>}
+
         {/* Le pasamos el precio calculado y la cantidad mínima al botón */}
-        <AddToCartButton 
-          product={hit} 
-          appliedPrice={price} 
-          minimumOrder={minimumOrder} 
+        <AddToCartButton
+          product={hit}
+          appliedPrice={price}
+          minimumOrder={minimumOrder}
+          priceType={priceType}
+          priceAvailable={isValid}
         />
       </div>
     </div>

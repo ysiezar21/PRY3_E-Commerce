@@ -10,7 +10,7 @@ function isValidItem(item) {
     item.id !== undefined &&
     typeof item.name === 'string' &&
     Number.isFinite(item.price) &&
-    item.price >= 0 &&
+    item.price > 0 && // precio 0 o negativo no es válido
     Number.isInteger(item.quantity) &&
     item.quantity >= 1
   );
@@ -24,7 +24,9 @@ export function loadCart() {
     if (!raw) return initialCartState;
     const parsed = JSON.parse(raw);
     if (!parsed || !Array.isArray(parsed.items)) return initialCartState;
-    return { items: parsed.items.filter(isValidItem) };
+    // También se recupera la sucursal elegida (antes se perdía al recargar).
+    const branchId = typeof parsed.branchId === 'string' ? parsed.branchId : null;
+    return { items: parsed.items.filter(isValidItem), branchId };
   } catch {
     return initialCartState;
   }

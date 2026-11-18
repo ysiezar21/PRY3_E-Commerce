@@ -13,9 +13,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../features/cart/CartContext';
-import { getCartSummary } from '../features/cart/cartCalculations';
+import { getCartSummary, validateB2BConditions } from '../features/cart/cartCalculations';
+import StatusMessage from '../components/StatusMessage';
 import CartSummary from '../features/cart/CartSummary';
 import CartEmptyState from '../features/cart/CartEmptyState';
 import CheckoutForm from '../features/checkout/CheckoutForm';
@@ -32,8 +33,10 @@ import { PAYMENT_RESULTS } from '../services/paymentSandbox';
 import { ORDER_RESULTS } from '../services/orderSandbox';
 import { useAuth } from '../features/auth/AuthContext';
 import { trackEvent } from '../features/analytics/analyticsService';
+import { DELIVERY_METHODS } from '../features/checkout/delivery';
 
 const EMPTY_FORM = {
+  deliveryMethod: DELIVERY_METHODS.SHIPPING,
   fullName: '',
   email: '',
   phone: '',
@@ -46,6 +49,7 @@ const EMPTY_FORM = {
 
 // Rellena el formulario con los datos de una orden ya guardada
 const formFromOrder = ({ buyer, delivery, termsAccepted }) => ({
+  deliveryMethod: delivery.method ?? DELIVERY_METHODS.SHIPPING,
   fullName: buyer.fullName,
   email: buyer.email,
   phone: buyer.phone,
@@ -58,13 +62,18 @@ const formFromOrder = ({ buyer, delivery, termsAccepted }) => ({
 });
 
 export default function CheckoutPage() {
-  const { items, clearCart } = useCart();
+  const { items, clearCart, branchId, setBranch } = useCart();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   // Si quedó una orden con el pago aprobado sin terminar de crear (por ejemplo, tras
   // recargar la página), se retoma en lugar de cobrar otra vez.
   const [order, setOrder] = useState(() => findAwaitingOrder(items));
-  const [form, setForm] = useState(() => (order ? formFromOrder(order) : EMPTY_FORM));
+  // Con sesión iniciada, nombre y correo vienen llenos desde el usuario.
+  const [form, setForm] = useState(() =>
+    order
+      ? formFromOrder(order)
+      : { ...EMPTY_FORM, fullName: currentUser?.name ?? '', email: currentUser?.email ?? '' }
+  );
   const [reviewing, setReviewing] = useState(() => Boolean(order));
   const [scenario, setScenario] = useState(PAYMENT_RESULTS.APPROVED);
   const [orderScenario, setOrderScenario] = useState(ORDER_RESULTS.CONFIRMED);
@@ -93,7 +102,27 @@ export default function CheckoutPage() {
     return <CartEmptyState />;
   }
 
-  const summary = getCartSummary(items);
+  // Valida el mínimo B2B aunque se entre directo a /checkout.
+  // Si ya hay una orden con pago en curso, no se interrumpe.
+  const b2bCheck = validateB2BConditions(items);
+  if (!order && !b2bCheck.isValid) {
+    return (
+      <StatusMessage
+        tone="error"
+        title="No se cumple el pedido mínimo B2B"
+        actions={
+          <Link to="/carrito" className="status-message__button">
+            Volver al carrito
+          </Link>
+        }
+      >
+        {b2bCheck.message} Ajuste la cantidad en el carrito para continuar.
+      </StatusMessage>
+    );
+  }
+
+  // Retiro en sucursal: sin costo de envío.
+  const summary = getCartSummary(items, form.deliveryMethod === DELIVERY_METHODS.SHIPPING);
 
   // Si cambian los datos, el próximo pago crea una orden nueva
   const discardOrder = () => {
@@ -117,7 +146,7 @@ export default function CheckoutPage() {
     setProcessing(true);
 
     // Al reintentar se usa la misma orden
-    const currentOrder = order ?? createOrder({ buyer: form, items, summary });
+    const currentOrder = order ?? createOrder({ buyer: form, items, summary, branchId });
     const updated = await payOrder(currentOrder, scenario);
 
     // Un pago aprobado aún no confirma la orden: el carrito se conserva hasta crearla
@@ -172,6 +201,7 @@ export default function CheckoutPage() {
         <OrderReview
           items={items}
           buyer={form}
+          branchId={branchId}
           summary={summary}
           onEdit={() => goToReview(false)}
           editDisabled={processing}
@@ -187,7 +217,14 @@ export default function CheckoutPage() {
         </OrderReview>
       ) : (
         <div className="checkout-page__content">
-          <CheckoutForm values={form} onChange={setForm} onSubmit={() => goToReview(true)} />
+          <CheckoutForm
+            values={form}
+            onChange={setForm}
+            onSubmit={() => goToReview(true)}
+            items={items}
+            branchId={branchId}
+            onBranchChange={setBranch}
+          />
           <CartSummary {...summary} />
         </div>
       )}

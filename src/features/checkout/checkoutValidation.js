@@ -63,11 +63,17 @@ const validators = {
   acceptTerms: (value) => value ? '' : 'Debe aceptar los términos y condiciones para continuar.',
 };
 
+// Campos que solo aplican al envío a domicilio.
+const ADDRESS_FIELDS = ['province', 'canton', 'address', 'notes'];
+
 // Devuelve solo los campos con error: { campo: mensaje }
 export function validateForm(form) {
   const errors = {};
 
   Object.keys(validators).forEach((name) => {
+    // Con retiro en sucursal no se pide dirección.
+    if (form.deliveryMethod === 'pickup' && ADDRESS_FIELDS.includes(name)) return;
+
     // `?? ''` protege contra campos ausentes en el formulario.
     const message = validators[name](form[name] ?? '', form);
     if (message) errors[name] = message;
