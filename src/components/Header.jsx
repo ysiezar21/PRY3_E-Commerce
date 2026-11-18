@@ -76,6 +76,10 @@ export default function Header() {
                         {can(PERMISSIONS.VIEW_ADMIN_INFO) && (
                           <Link to="/admin" className="navbar__admin-link">Ir al panel</Link>
                         )}
+
+                        {can(PERMISSIONS.VIEW_OWN_ORDERS) && (
+                          <Link to="/ordenes" className="navbar__admin-link">Mis órdenes</Link>
+                        )}
                       </div>
                       {/* En pantallas pequeñas el nombre se oculta: el rol queda visible aquí */}
                       <span
