@@ -3,6 +3,7 @@ import { formatCRC } from '../cart/formatCurrency';
 import { useAuth } from '../auth/AuthContext';
 import { trackEvent } from '../analytics/analyticsService';
 import { DELIVERY_LABELS, DELIVERY_METHODS } from './delivery';
+import CommercialTerms from './CommercialTerms';
 
 // Fecha larga con hora, en formato costarricense (ej. "16 de octubre de 2026, 14:30").
 const formatDate = (iso) =>
@@ -59,6 +60,7 @@ export default function OrderConfirmation({ order, onContinue }) {
               <tr>
                 <th scope="col">Producto</th>
                 <th scope="col">Cantidad</th>
+                <th scope="col">Tipo de precio</th>
                 <th scope="col">Precio unitario</th>
                 <th scope="col">Subtotal</th>
               </tr>
@@ -69,6 +71,7 @@ export default function OrderConfirmation({ order, onContinue }) {
                 <tr key={item.id}>
                   <td>{item.name}</td>
                   <td>{item.quantity}</td>
+                  <td>{item.priceType ?? 'B2C'}</td>
                   <td>{formatCRC(item.unitPrice)}</td>
                   <td>{formatCRC(item.subtotal)}</td>
                 </tr>
@@ -100,6 +103,9 @@ export default function OrderConfirmation({ order, onContinue }) {
           </div>
         </dl>
       </div>
+
+      {/* Las órdenes guardadas antes de este cambio no tienen usuario */}
+      {order.user && <CommercialTerms user={order.user} lines={order.items} />}
 
       <div className="order-review__columns">
         <div className="order-review__block">

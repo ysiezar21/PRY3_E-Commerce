@@ -2,10 +2,11 @@ import { getLineSubtotal } from '../cart/cartCalculations';
 import { formatCRC } from '../cart/formatCurrency';
 import { getBranchName } from '../branches/branches';
 import { DELIVERY_LABELS, DELIVERY_METHODS } from './delivery';
+import CommercialTerms from './CommercialTerms';
 
 // Resumen final de la compra: productos, datos del comprador y entrega, y totales.
 // Los valores vienen del carrito, aquí no se recalcula nada.
-export default function OrderReview({ items, buyer, branchId, summary, onEdit, editDisabled, children }) {
+export default function OrderReview({ items, buyer, user, branchId, summary, onEdit, editDisabled, children }) {
   const { subtotal, iva, shipping, total } = summary;
   const isShipping = buyer.deliveryMethod === DELIVERY_METHODS.SHIPPING;
 
@@ -26,6 +27,7 @@ export default function OrderReview({ items, buyer, branchId, summary, onEdit, e
               <tr>
                 <th scope="col">Producto</th>
                 <th scope="col">Cantidad</th>
+                <th scope="col">Tipo de precio</th>
                 <th scope="col">Precio unitario</th>
                 <th scope="col">Subtotal</th>
               </tr>
@@ -36,6 +38,7 @@ export default function OrderReview({ items, buyer, branchId, summary, onEdit, e
                 <tr key={item.id}>
                   <td>{item.name}</td>
                   <td>{item.quantity}</td>
+                  <td>{item.priceType ?? 'B2C'}</td>
                   <td>{formatCRC(item.price)}</td>
                   <td>{formatCRC(getLineSubtotal(item))}</td>
                 </tr>
@@ -67,6 +70,8 @@ export default function OrderReview({ items, buyer, branchId, summary, onEdit, e
           </div>
         </dl>
       </div>
+
+      <CommercialTerms user={user} lines={items} />
 
       <div className="order-review__columns">
         <div className="order-review__block">
