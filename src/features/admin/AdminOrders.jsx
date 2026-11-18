@@ -123,17 +123,17 @@ export default function AdminOrders() {
                 <tbody>
                   {filtered.map((order) => (
                     <tr key={order.orderNumber}>
-                      <td>
+                      <td data-label="Orden">
                         <Link to={`/ordenes/${order.orderNumber}`}>{order.orderNumber}</Link>
                       </td>
-                      <td>{formatOrderDate(order.date)}</td>
-                      <td>{getClientName(order)}</td>
-                      <td>{TYPE_LABELS[getRole(order)] ?? getRole(order)}</td>
-                      <td>{order.user?.company ?? '-'}</td>
-                      <td>{formatCRC(order.total)}</td>
-                      <td>{order.delivery?.branchName ?? '-'}</td>
-                      <td>{order.orderStatus}</td>
-                      <td>{order.paymentStatus}</td>
+                      <td data-label="Fecha">{formatOrderDate(order.date)}</td>
+                      <td data-label="Cliente">{getClientName(order)}</td>
+                      <td data-label="Tipo">{TYPE_LABELS[getRole(order)] ?? getRole(order)}</td>
+                      <td data-label="Empresa">{order.user?.company ?? '-'}</td>
+                      <td data-label="Total">{formatCRC(order.total)}</td>
+                      <td data-label="Sucursal">{order.delivery?.branchName ?? '-'}</td>
+                      <td data-label="Estado de la orden">{order.orderStatus}</td>
+                      <td data-label="Estado del pago">{order.paymentStatus}</td>
                     </tr>
                   ))}
                 </tbody>

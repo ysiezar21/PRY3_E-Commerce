@@ -36,11 +36,11 @@ export default function OrderReview({ items, buyer, user, branchId, summary, onE
               {/* El subtotal por línea se deriva; el carrito no lo guarda. */}
               {items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.priceType ?? 'B2C'}</td>
-                  <td>{formatCRC(item.price)}</td>
-                  <td>{formatCRC(getLineSubtotal(item))}</td>
+                  <td data-label="Producto">{item.name}</td>
+                  <td data-label="Cantidad">{item.quantity}</td>
+                  <td data-label="Tipo de precio">{item.priceType ?? 'B2C'}</td>
+                  <td data-label="Precio unitario">{formatCRC(item.price)}</td>
+                  <td data-label="Subtotal">{formatCRC(getLineSubtotal(item))}</td>
                 </tr>
               ))}
             </tbody>

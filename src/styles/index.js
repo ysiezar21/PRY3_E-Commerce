@@ -10,6 +10,7 @@ import './components/CheckoutProgress.css';
 import './components/Footer.css';
 import './components/StatusMessage.css';
 import './components/BranchSelector.css';
+import './components/ResponsiveTable.css';
 
 import './components/SearchBar.css';
 import './components/FiltersSidebar.css';

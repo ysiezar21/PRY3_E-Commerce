@@ -89,15 +89,15 @@ export default function OrdersPage() {
           <tbody>
             {orders.map((order) => (
               <tr key={order.orderNumber}>
-                <td>
+                <td data-label="Orden">
                   <Link to={`/ordenes/${order.orderNumber}`}>{order.orderNumber}</Link>
                 </td>
-                <td>{formatOrderDate(order.date)}</td>
-                <td>{countUnits(order)} uds</td>
-                <td>{order.delivery?.branchName ?? '-'}</td>
-                <td>{formatCRC(order.total)}</td>
-                <td>{order.orderStatus}</td>
-                <td>{order.paymentStatus}</td>
+                <td data-label="Fecha">{formatOrderDate(order.date)}</td>
+                <td data-label="Productos">{countUnits(order)} uds</td>
+                <td data-label="Sucursal">{order.delivery?.branchName ?? '-'}</td>
+                <td data-label="Total">{formatCRC(order.total)}</td>
+                <td data-label="Estado de la orden">{order.orderStatus}</td>
+                <td data-label="Estado del pago">{order.paymentStatus}</td>
               </tr>
             ))}
           </tbody>

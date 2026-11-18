@@ -163,15 +163,15 @@ export default function AdminProducts() {
 
                 return (
                   <tr key={product.objectID}>
-                    <td>
+                    <td data-label="Producto">
                       {product.name}
                       {product.modified && <span className="admin-pill">Modificado</span>}
                     </td>
-                    <td>{getCategoryLabel(product)}</td>
+                    <td data-label="Categoría">{getCategoryLabel(product)}</td>
 
                     {isEditing ? (
                       <>
-                        <td>
+                        <td data-label="Precio B2C">
                           <input
                             className="admin-section__price-input"
                             type="number"
@@ -181,7 +181,7 @@ export default function AdminProducts() {
                             aria-label={`Nuevo precio B2C de ${product.name}`}
                           />
                         </td>
-                        <td>
+                        <td data-label="Precio B2B">
                           <input
                             className="admin-section__price-input"
                             type="number"
@@ -194,16 +194,16 @@ export default function AdminProducts() {
                       </>
                     ) : (
                       <>
-                        <td>{product.price > 0 ? formatCRC(product.price) : 'No disponible'}</td>
-                        <td>
+                        <td data-label="Precio B2C">{product.price > 0 ? formatCRC(product.price) : 'No disponible'}</td>
+                        <td data-label="Precio B2B">
                           {formatCRC(b2b.wholesale_price)}
                           {invalidB2B && <span className="admin-pill admin-pill--warn">Inválido</span>}
                         </td>
                       </>
                     )}
 
-                    <td>{b2b.minimum_order ?? 1}</td>
-                    <td>
+                    <td data-label="Mín. B2B">{b2b.minimum_order ?? 1}</td>
+                    <td data-label="Acción">
                       {isEditing ? (
                         <div className="admin-section__row-actions">
                           <button type="button" className="admin-button" onClick={() => saveEditing(product)}>
@@ -276,11 +276,11 @@ export default function AdminProducts() {
               <tbody>
                 {[...changes].reverse().map((change, index) => (
                   <tr key={`${change.date}-${change.field}-${index}`}>
-                    <td>{formatOrderDate(change.date)}</td>
-                    <td>{change.productName}</td>
-                    <td>{PRICE_FIELDS[change.field]}</td>
-                    <td>{formatCRC(change.oldValue)}</td>
-                    <td>{formatCRC(change.newValue)}</td>
+                    <td data-label="Fecha">{formatOrderDate(change.date)}</td>
+                    <td data-label="Producto">{change.productName}</td>
+                    <td data-label="Campo">{PRICE_FIELDS[change.field]}</td>
+                    <td data-label="Valor anterior">{formatCRC(change.oldValue)}</td>
+                    <td data-label="Valor nuevo">{formatCRC(change.newValue)}</td>
                   </tr>
                 ))}
               </tbody>
