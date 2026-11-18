@@ -7,8 +7,10 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { useAuth } from '../auth/AuthContext';
+import { PERMISSIONS } from '../auth/permissions';
 import { trackEvent } from '../analytics/analyticsService';
 
 export default function AddToCartButton({ 
@@ -19,7 +21,8 @@ export default function AddToCartButton({
 }) {
   const { addItem, items } = useCart();
 
-  const { currentUser } = useAuth();
+  const { currentUser, can } = useAuth();
+  const navigate = useNavigate();
 
   // added: controla el feedback visual "✓ Agregado".
   // timerRef: guarda el timeout para poder limpiarlo al desmontar o al
@@ -30,6 +33,38 @@ export default function AddToCartButton({
   // Al desmontar, cancelamos el timeout pendiente para evitar setState
   // sobre un componente que ya no está montado.
   useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  // Control de acceso por rol:
+  //   - Sin sesión no se puede comprar: el botón lleva al inicio de sesión.
+  //   - El administrador solo consulta el catálogo, no compra.
+  // stopPropagation evita que el clic también abra el detalle del producto.
+  if (!currentUser) {
+    return (
+      <button
+        type="button"
+        className={`add-to-cart-btn ${className}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate('/login');
+        }}
+      >
+        Inicie sesión para comprar
+      </button>
+    );
+  }
+
+  if (!can(PERMISSIONS.ADD_TO_CART)) {
+    return (
+      <button
+        type="button"
+        className={`add-to-cart-btn ${className}`}
+        disabled
+        title="El rol Administrador no realiza compras"
+      >
+        Solo consulta
+      </button>
+    );
+  }
 
   // Unidades del producto ya presentes en el carrito (0 si no está).
   const inCart = items.find((item) => item.id === product.id)?.quantity ?? 0;
