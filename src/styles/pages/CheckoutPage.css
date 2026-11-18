@@ -251,6 +251,17 @@
   overflow-wrap: anywhere;
 }
 
+/* Lista dentro de un dato (por ejemplo, los mínimos B2B por producto) */
+.order-review__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-review__list li + li {
+  margin-top: 4px;
+}
+
 /* ===== Pago Sandbox ===== */
 
 .payment-section {

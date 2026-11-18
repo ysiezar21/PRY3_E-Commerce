@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seed-algolia": "node scripts/seed-algolia.mjs"
+    "seed-algolia": "node scripts/seed-algolia.mjs",
+    "setup-orders-index": "node scripts/setup-orders-index.mjs"
   },
   "dependencies": {
     "@algolia/client-search": "^5.57.0",

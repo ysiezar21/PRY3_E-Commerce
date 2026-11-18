@@ -1,30 +1,39 @@
 import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { formatCRC } from '../cart/formatCurrency';
 import { useAuth } from '../auth/AuthContext';
+import { PERMISSIONS } from '../auth/permissions';
 import { trackEvent } from '../analytics/analyticsService';
+import { formatOrderDate as formatDate } from '../orders/formatOrderDate';
 import { DELIVERY_LABELS, DELIVERY_METHODS } from './delivery';
+import CommercialTerms from './CommercialTerms';
 
-// Fecha larga con hora, en formato costarricense (ej. "16 de octubre de 2026, 14:30").
-const formatDate = (iso) =>
-  new Intl.DateTimeFormat('es-CR', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(iso));
-
-// Se muestra solo con la orden confirmada; los datos salen de la orden guardada, no del carrito
-export default function OrderConfirmation({ order, onContinue }) {
+// Se muestra solo con la orden confirmada; los datos salen de la orden guardada, no del carrito.
+//   mode="confirmation": pantalla final de la compra (registra la compra en analytics).
+//   mode="detail":       consulta posterior de una orden (Mis órdenes y panel admin);
+//                        no vuelve a registrar la compra.
+export default function OrderConfirmation({
+  order,
+  onContinue,
+  mode = 'confirmation',
+  continueLabel = 'Seguir comprando',
+}) {
   const { buyer, delivery } = order;
+  const isDetail = mode === 'detail';
   // El último intento de pago es el que dejó la orden confirmada.
-  const payment = order.paymentAttempts.at(-1);
-  const { currentUser } = useAuth();
+  const payment = order.paymentAttempts?.at(-1);
+  const { currentUser, can } = useAuth();
   const trackedRef = useRef(false);
 
   useEffect(() => {
-    if (!trackedRef.current) {
+    if (!isDetail && !trackedRef.current) {
       trackEvent('PURCHASE', { 
         orderNumber: order.orderNumber, 
         total: order.total 
       }, currentUser);
       trackedRef.current = true;
     }
-  }, [order.orderNumber, order.total, currentUser]);
+  }, [isDetail, order.orderNumber, order.total, currentUser]);
 
   return (
     <section className="order-review order-confirmation">
@@ -32,8 +41,17 @@ export default function OrderConfirmation({ order, onContinue }) {
         {/* Icono decorativo: el texto ya comunica la confirmación. */}
         <span className="order-confirmation__icon" aria-hidden="true">✓</span>
         <div>
-          <h2>¡Compra confirmada!</h2>
-          <p>Gracias por su compra, {buyer.fullName}. Su pago fue aprobado.</p>
+          {isDetail ? (
+            <>
+              <h2>Detalle de la orden</h2>
+              <p>Orden confirmada el {formatDate(order.date)}.</p>
+            </>
+          ) : (
+            <>
+              <h2>¡Compra confirmada!</h2>
+              <p>Gracias por su compra, {buyer.fullName}. Su pago fue aprobado.</p>
+            </>
+          )}
         </div>
       </div>
 
@@ -43,7 +61,7 @@ export default function OrderConfirmation({ order, onContinue }) {
         <dt>Fecha</dt>
         <dd>{formatDate(order.date)}</dd>
         <dt>Transacción</dt>
-        <dd>{payment.transactionId}</dd>
+        <dd>{payment?.transactionId ?? 'No disponible'}</dd>
       </dl>
 
       <p className="order-states">
@@ -59,6 +77,7 @@ export default function OrderConfirmation({ order, onContinue }) {
               <tr>
                 <th scope="col">Producto</th>
                 <th scope="col">Cantidad</th>
+                <th scope="col">Tipo de precio</th>
                 <th scope="col">Precio unitario</th>
                 <th scope="col">Subtotal</th>
               </tr>
@@ -69,6 +88,7 @@ export default function OrderConfirmation({ order, onContinue }) {
                 <tr key={item.id}>
                   <td>{item.name}</td>
                   <td>{item.quantity}</td>
+                  <td>{item.priceType ?? 'B2C'}</td>
                   <td>{formatCRC(item.unitPrice)}</td>
                   <td>{formatCRC(item.subtotal)}</td>
                 </tr>
@@ -100,6 +120,9 @@ export default function OrderConfirmation({ order, onContinue }) {
           </div>
         </dl>
       </div>
+
+      {/* Las órdenes guardadas antes de este cambio no tienen usuario */}
+      {order.user && <CommercialTerms user={order.user} lines={order.items} />}
 
       <div className="order-review__columns">
         <div className="order-review__block">
@@ -147,8 +170,15 @@ export default function OrderConfirmation({ order, onContinue }) {
         </div>
       </div>
 
+      {/* Con sesión de cliente, la orden queda consultable en "Mis órdenes". */}
+      {!isDetail && can(PERMISSIONS.VIEW_OWN_ORDERS) && (
+        <p className="order-confirmation__orders-link">
+          Puede consultar esta orden en <Link to={`/ordenes/${order.orderNumber}`}>Mis órdenes</Link>.
+        </p>
+      )}
+
       <button type="button" className="checkout-form__submit" onClick={onContinue}>
-        Seguir comprando
+        {continueLabel}
       </button>
     </section>
   );

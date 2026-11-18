@@ -8,10 +8,12 @@ import { useAuth } from './AuthContext';
 import { getRoleInfo } from './permissions';
 import StatusMessage from '../../components/StatusMessage';
 
+// permission puede ser un permiso o una lista: con una lista basta con tener uno.
 export default function RequirePermission({ permission, area = 'esta sección', children }) {
   const { currentUser, can } = useAuth();
 
-  if (can(permission)) return children;
+  const allowed = Array.isArray(permission) ? permission.some((item) => can(item)) : can(permission);
+  if (allowed) return children;
 
   // Sin sesión: directo al inicio de sesión, sin página de error.
   if (!currentUser) {

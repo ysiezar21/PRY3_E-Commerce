@@ -25,7 +25,13 @@ import OrderReview from '../features/checkout/OrderReview';
 import PaymentSection, { PaymentAlert } from '../features/checkout/PaymentSection';
 import OrderConfirmation from '../features/checkout/OrderConfirmation';
 import OrderStep from '../features/checkout/OrderStep';
-import { createOrder, abandonOrder, isAwaitingOrder, ORDER_STATUS } from '../features/orders/orderModel';
+import {
+  createOrder,
+  abandonOrder,
+  isAwaitingOrder,
+  buildOrderUser,
+  ORDER_STATUS,
+} from '../features/orders/orderModel';
 import { saveOrder, findAwaitingOrder } from '../features/orders/orderStorage';
 import { payOrder } from '../features/orders/payOrder';
 import { fulfillOrder } from '../features/orders/fulfillOrder';
@@ -124,6 +130,9 @@ export default function CheckoutPage() {
   // Retiro en sucursal: sin costo de envío.
   const summary = getCartSummary(items, form.deliveryMethod === DELIVERY_METHODS.SHIPPING);
 
+  // Usuario que queda guardado en la orden (invitado con rol GUEST si no hay sesión).
+  const orderUser = buildOrderUser(currentUser, form);
+
   // Si cambian los datos, el próximo pago crea una orden nueva
   const discardOrder = () => {
     if (order) saveOrder(abandonOrder(order));
@@ -146,7 +155,7 @@ export default function CheckoutPage() {
     setProcessing(true);
 
     // Al reintentar se usa la misma orden
-    const currentOrder = order ?? createOrder({ buyer: form, items, summary, branchId });
+    const currentOrder = order ?? createOrder({ buyer: form, user: orderUser, items, summary, branchId });
     const updated = await payOrder(currentOrder, scenario);
 
     // Un pago aprobado aún no confirma la orden: el carrito se conserva hasta crearla
@@ -201,6 +210,7 @@ export default function CheckoutPage() {
         <OrderReview
           items={items}
           buyer={form}
+          user={orderUser}
           branchId={branchId}
           summary={summary}
           onEdit={() => goToReview(false)}

@@ -1,0 +1,107 @@
+/* ===== Mis órdenes y detalle de orden ===== */
+
+.orders-page {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 36px 40px 56px;
+}
+
+.orders-page--detail {
+  max-width: 900px;
+}
+
+.orders-page__header {
+  margin-bottom: 24px;
+}
+
+.orders-page__header h1 {
+  margin: 0 0 6px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--text-h, #1a1a2e);
+}
+
+.orders-page__header p {
+  margin: 0;
+  color: var(--text, #6b6b73);
+}
+
+.orders-page__loading {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text, #6b6b73);
+}
+
+.orders-page__notice {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  background: #fff8e6;
+  border: 1px solid #f5d98a;
+  border-radius: 8px;
+  color: #6b4e00;
+  font-size: 14px;
+}
+
+/* Permite deslizar la tabla en pantallas angostas */
+.orders-page__table-wrapper {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 10px;
+}
+
+.orders-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.orders-page__table th,
+.orders-page__table td {
+  padding: 12px 14px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid #f0f0f3;
+}
+
+.orders-page__table th {
+  font-weight: 600;
+  color: #6b6b73;
+}
+
+.orders-page__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.orders-page__table a {
+  color: var(--accent, #5b2eff);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.orders-page__table a:hover {
+  text-decoration: underline;
+}
+
+.order-confirmation__orders-link {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #6b6b73;
+}
+
+.order-confirmation__orders-link a {
+  color: var(--accent, #5b2eff);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .orders-page {
+    padding: 24px 16px 40px;
+  }
+
+  .orders-page__header h1 {
+    font-size: 26px;
+  }
+}

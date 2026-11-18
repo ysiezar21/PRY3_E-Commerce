@@ -9,6 +9,8 @@
  *   - "/producto/:id"  → detalle de un producto.
  *   - "/carrito"       → carrito de compras.
  *   - "/checkout"      → proceso de compra.
+ *   - "/ordenes"       → "Mis órdenes" (clientes B2C y B2B).
+ *   - "/ordenes/:orderNumber" → detalle de una orden (dueño de la orden o ADMIN).
  *   - "/admin"         → panel administrativo (solo rol ADMIN).
  *   "/carrito" y "/checkout" requieren un cliente B2C o B2B con sesión.
  *   - "/informacion"   → centro de información (índice de políticas).
@@ -41,6 +43,8 @@ import FaqPage from "../features/info/FaqPage";
 import LoginPage from './LoginPage';
 import AnalyticsPage from './AnalyticsPage';
 import AdminPage from './AdminPage';
+import OrdersPage from './OrdersPage';
+import OrderDetailPage from './OrderDetailPage';
 import RequirePermission from '../features/auth/RequirePermission';
 import { PERMISSIONS } from '../features/auth/permissions';
 
@@ -70,6 +74,25 @@ export default function MainLayout() {
                 element={
                   <RequirePermission permission={PERMISSIONS.CHECKOUT} area="el proceso de compra">
                     <CheckoutPage />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="/ordenes"
+                element={
+                  <RequirePermission permission={PERMISSIONS.VIEW_OWN_ORDERS} area="sus órdenes">
+                    <OrdersPage />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="/ordenes/:orderNumber"
+                element={
+                  <RequirePermission
+                    permission={[PERMISSIONS.VIEW_OWN_ORDERS, PERMISSIONS.VIEW_ALL_ORDERS]}
+                    area="el detalle de órdenes"
+                  >
+                    <OrderDetailPage />
                   </RequirePermission>
                 }
               />

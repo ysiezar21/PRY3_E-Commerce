@@ -1,6 +1,7 @@
 import { processOrder, ORDER_RESULTS } from '../../services/orderSandbox';
-import { applyOrderResult, isAwaitingOrder } from './orderModel';
+import { applyOrderResult, isAwaitingOrder, ORDER_STATUS } from './orderModel';
 import { saveOrder } from './orderStorage';
+import { saveOrderToAlgolia, syncLocalOrders } from './ordersService';
 
 // Crea la orden después de un pago aprobado.
 // Nunca lanza error y NUNCA vuelve a cobrar: solo consulta al servicio de órdenes.
@@ -25,5 +26,14 @@ export async function fulfillOrder(order, scenario) {
 
   const updated = applyOrderResult(order, response);
   saveOrder(updated);
+
+  // Solo las órdenes confirmadas van al índice de Algolia. Si el guardado falla,
+  // la orden sigue confirmada y guardada en el navegador (no se revierte la compra).
+  if (updated.orderStatus === ORDER_STATUS.CONFIRMED) {
+    await saveOrderToAlgolia(updated);
+    // De paso, sube las órdenes anteriores que hayan quedado pendientes.
+    syncLocalOrders();
+  }
+
   return updated;
 }

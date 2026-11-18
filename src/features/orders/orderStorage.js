@@ -32,6 +32,11 @@ export function getOrder(orderNumber) {
   return loadOrders()[orderNumber] ?? null;
 }
 
+// Todas las órdenes guardadas en este navegador.
+export function listOrders() {
+  return Object.values(loadOrders());
+}
+
 // Firma de una lista de productos (id, cantidad y precio) para compararlas.
 const signature = (lines) =>
   lines
