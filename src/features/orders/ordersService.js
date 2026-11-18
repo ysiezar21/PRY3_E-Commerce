@@ -59,6 +59,24 @@ export async function saveOrderToAlgolia(order) {
   }
 }
 
+// Reenvía a Algolia las órdenes confirmadas de este navegador que no estén en el índice
+// (por ejemplo, si no había conexión al confirmar). Se llama al cargar la app y después
+// de cada compra confirmada. Reenviar una orden existente no la duplica: se reemplaza.
+export async function syncLocalOrders() {
+  const localOrders = listOrders().filter((order) => order.orderStatus === ORDER_STATUS.CONFIRMED);
+  if (localOrders.length === 0) return;
+
+  try {
+    const { results } = await getIndex().getObjects(localOrders.map((order) => order.orderNumber));
+    // getObjects devuelve null para las órdenes que no están en el índice.
+    const missing = localOrders.filter((_, i) => !results[i]);
+    await Promise.all(missing.map((order) => saveOrderToAlgolia(order)));
+  } catch (error) {
+    // Algolia no disponible: se intenta de nuevo en la próxima carga o compra.
+    console.error('No se pudieron sincronizar las órdenes con Algolia:', error);
+  }
+}
+
 // Órdenes confirmadas del usuario, de la más reciente a la más antigua.
 // Devuelve { orders, remoteFailed }; remoteFailed indica que Algolia no respondió y
 // que solo se muestran las órdenes guardadas en este navegador.
@@ -79,15 +97,6 @@ export async function fetchUserOrders(userId) {
   } catch (error) {
     console.error('No se pudieron consultar las órdenes en Algolia:', error);
     remoteFailed = true;
-  }
-
-  if (!remoteFailed) {
-    // Una orden confirmada cuyo guardado en Algolia falló (por ejemplo, sin conexión
-    // en ese momento) se vuelve a enviar aquí, ya que Algolia sí está disponible.
-    const indexed = new Set(remoteOrders.map((order) => order.orderNumber));
-    localOrders
-      .filter((order) => !indexed.has(order.orderNumber))
-      .forEach((order) => saveOrderToAlgolia(order));
   }
 
   return { orders: mergeOrders(localOrders, remoteOrders), remoteFailed };
