@@ -92,7 +92,7 @@ export default function Header() {
                       </button>
                     </>
                   ) : (
-                    <Link to="/login" className="navbar__login-link">Iniciar Sesión</Link>
+                    <Link to="/login" className="navbar__login-link">Iniciar sesión</Link>
                   )}
                 </div>
 
@@ -144,6 +144,15 @@ export default function Header() {
                   </button>
                 )}
               </div>
+
+              {/* En celular el nombre se oculta: estos accesos quedan en una fila propia */}
+              {currentUser && (can(PERMISSIONS.VIEW_ADMIN_INFO) || can(PERMISSIONS.VIEW_OWN_ORDERS)) && (
+                <nav className="navbar__mobile-links" aria-label="Accesos de la cuenta">
+                  <span className="navbar__mobile-user">{currentUser.name}</span>
+                  {can(PERMISSIONS.VIEW_ADMIN_INFO) && <Link to="/admin">Panel administrativo</Link>}
+                  {can(PERMISSIONS.VIEW_OWN_ORDERS) && <Link to="/ordenes">Mis órdenes</Link>}
+                </nav>
+              )}
             </>
           )}
         </div>

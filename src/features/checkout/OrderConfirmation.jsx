@@ -86,11 +86,11 @@ export default function OrderConfirmation({
               {/* Los importes ya vienen calculados en la orden guardada. */}
               {order.items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.priceType ?? 'B2C'}</td>
-                  <td>{formatCRC(item.unitPrice)}</td>
-                  <td>{formatCRC(item.subtotal)}</td>
+                  <td data-label="Producto">{item.name}</td>
+                  <td data-label="Cantidad">{item.quantity}</td>
+                  <td data-label="Tipo de precio">{item.priceType ?? 'B2C'}</td>
+                  <td data-label="Precio unitario">{formatCRC(item.unitPrice)}</td>
+                  <td data-label="Subtotal">{formatCRC(item.subtotal)}</td>
                 </tr>
               ))}
             </tbody>

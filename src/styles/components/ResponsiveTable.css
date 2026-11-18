@@ -1,0 +1,73 @@
+/* ===== Tablas como tarjetas en celular =====
+   Aplica a las tablas de órdenes, panel administrativo y revisión de compra.
+   Cada celda muestra su etiqueta con data-label. Hasta 900px (celular y tablet);
+   en pantallas anchas las tablas no cambian. */
+
+@media (max-width: 900px) {
+  .orders-page__table-wrapper {
+    overflow-x: visible;
+    background: transparent;
+    border: none;
+  }
+
+  table.orders-page__table,
+  table.order-review__table {
+    display: block;
+  }
+
+  table.orders-page__table thead,
+  table.order-review__table thead {
+    display: none;
+  }
+
+  table.orders-page__table tbody,
+  table.order-review__table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  table.orders-page__table tr,
+  table.order-review__table tr {
+    display: block;
+    padding: 8px 14px;
+    background: #fff;
+    border: 1px solid #e5e5ea;
+    border-radius: 10px;
+  }
+
+  table.orders-page__table td,
+  table.order-review__table td,
+  table.order-review__table td:first-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    text-align: right;
+    white-space: normal;
+    word-break: break-word;
+    border-bottom: 1px solid #f0f0f3;
+  }
+
+  table.orders-page__table tr td:last-child,
+  table.order-review__table tr td:last-child {
+    border-bottom: none;
+  }
+
+  /* Etiqueta de cada dato */
+  table.orders-page__table td::before,
+  table.order-review__table td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-weight: 600;
+    color: #6b6b73;
+    text-align: left;
+  }
+
+  /* El primer dato (orden o producto) se destaca como título de la tarjeta */
+  table.orders-page__table td:first-child,
+  table.order-review__table td:first-child {
+    font-weight: 700;
+  }
+}

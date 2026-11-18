@@ -92,16 +92,20 @@ export default function AdminInventory() {
             <tbody>
               {visible.map((product) => (
                 <tr key={product.objectID}>
-                  <td>{product.name}</td>
+                  <td data-label="Producto">{product.name}</td>
                   {BRANCHES.map((branch) => {
                     const qty = getStockAtBranch(product, branch.id);
                     return (
-                      <td key={branch.id} className={qty === 0 ? 'admin-stock--out' : ''}>
+                      <td
+                        key={branch.id}
+                        data-label={branch.name}
+                        className={qty === 0 ? 'admin-stock--out' : ''}
+                      >
                         {qty === 0 ? 'Agotado' : qty}
                       </td>
                     );
                   })}
-                  <td><strong>{getTotalStock(product)}</strong></td>
+                  <td data-label="Total"><strong>{getTotalStock(product)}</strong></td>
                 </tr>
               ))}
             </tbody>
