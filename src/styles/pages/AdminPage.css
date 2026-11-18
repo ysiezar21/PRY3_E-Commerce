@@ -75,7 +75,109 @@
   color: #9a9aa2;
 }
 
+/* ===== Pestañas del panel ===== */
+
+.admin-page__tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border, #e5e4e7);
+  overflow-x: auto;
+}
+
+.admin-page__tab {
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text, #6b6b73);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.admin-page__tab:hover {
+  color: var(--accent, #5b2eff);
+}
+
+.admin-page__tab--active {
+  color: var(--accent, #5b2eff);
+  border-bottom-color: var(--accent, #5b2eff);
+}
+
+.admin-page__tab:focus-visible {
+  outline: 2px solid var(--accent, #5b2eff);
+  outline-offset: -2px;
+}
+
+/* ===== Contenido de cada sección ===== */
+
+.admin-section h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: var(--text-h, #1a1a2e);
+}
+
+.admin-section__intro {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--text, #6b6b73);
+}
+
+.admin-section__empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text, #6b6b73);
+}
+
+.admin-section__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.admin-section__filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #6b6b73);
+}
+
+.admin-section__filters input,
+.admin-section__filters select {
+  min-width: 220px;
+  padding: 9px 12px;
+  border: 1px solid var(--border, #e5e4e7);
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-h, #1a1a2e);
+}
+
+.admin-section__filters input:focus-visible,
+.admin-section__filters select:focus-visible {
+  outline: 2px solid var(--accent, #5b2eff);
+  outline-offset: 1px;
+}
+
 @media (max-width: 640px) {
+  .admin-section__filters input,
+  .admin-section__filters select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .admin-section__filters label {
+    flex: 1 1 100%;
+  }
+
   .admin-page {
     padding: 24px 20px 40px;
   }

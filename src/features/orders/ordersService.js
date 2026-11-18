@@ -37,6 +37,14 @@ function fromRecord(record) {
   return order;
 }
 
+// Une las órdenes locales y las de Algolia, sin repetir números de orden.
+// Si una orden está en los dos lados, se usa la de Algolia. Más reciente primero.
+function mergeOrders(localOrders, remoteOrders) {
+  const byNumber = new Map();
+  [...localOrders, ...remoteOrders].forEach((order) => byNumber.set(order.orderNumber, order));
+  return [...byNumber.values()].sort((a, b) => b.date.localeCompare(a.date));
+}
+
 // Escapa comillas y diagonales para usar un valor dentro de un filtro de Algolia.
 const escapeFilterValue = (value) => String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
@@ -82,12 +90,27 @@ export async function fetchUserOrders(userId) {
       .forEach((order) => saveOrderToAlgolia(order));
   }
 
-  // Si una orden está en los dos lados, se usa la de Algolia.
-  const byNumber = new Map();
-  [...localOrders, ...remoteOrders].forEach((order) => byNumber.set(order.orderNumber, order));
+  return { orders: mergeOrders(localOrders, remoteOrders), remoteFailed };
+}
 
-  const orders = [...byNumber.values()].sort((a, b) => b.date.localeCompare(a.date));
-  return { orders, remoteFailed };
+// Todas las órdenes confirmadas de todos los usuarios, para el panel administrativo.
+// Devuelve { orders, remoteFailed } igual que fetchUserOrders. Trae hasta 1000 órdenes
+// (el máximo de una consulta a Algolia), más que suficiente para este proyecto.
+export async function fetchAllOrders() {
+  const localOrders = listOrders().filter((order) => order.orderStatus === ORDER_STATUS.CONFIRMED);
+
+  let remoteOrders = [];
+  let remoteFailed = false;
+
+  try {
+    const { hits } = await getIndex().search('', { hitsPerPage: 1000 });
+    remoteOrders = hits.map(fromRecord);
+  } catch (error) {
+    console.error('No se pudieron consultar las órdenes en Algolia:', error);
+    remoteFailed = true;
+  }
+
+  return { orders: mergeOrders(localOrders, remoteOrders), remoteFailed };
 }
 
 // Busca una orden por su número.
