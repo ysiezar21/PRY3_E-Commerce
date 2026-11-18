@@ -28,6 +28,9 @@ const P = PERMISSIONS;
 // Lo que puede hacer cualquier visitante, tenga sesión o no.
 const PUBLIC_PERMISSIONS = [P.VIEW_CATALOG, P.SEARCH_PRODUCTS];
 
+// Invitado (sin sesión): compra como cliente B2C, con precio público.
+const GUEST_PERMISSIONS = [...PUBLIC_PERMISSIONS, P.ADD_TO_CART, P.CHECKOUT];
+
 // B2C y B2B comparten permisos: lo que cambia entre ellos son los precios y
 // las condiciones comerciales, no las pantallas disponibles.
 const CUSTOMER_PERMISSIONS = [...PUBLIC_PERMISSIONS, P.ADD_TO_CART, P.CHECKOUT, P.VIEW_OWN_ORDERS];
@@ -55,7 +58,7 @@ export function isValidUser(user) {
 }
 
 export function can(user, permission) {
-  if (!isValidUser(user)) return PUBLIC_PERMISSIONS.includes(permission);
+  if (!isValidUser(user)) return GUEST_PERMISSIONS.includes(permission);
   return ROLE_PERMISSIONS[user.role].includes(permission);
 }
 

@@ -89,6 +89,20 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Aviso de precio no disponible o mayorista no aplicado */
+.price-notice {
+  margin: auto 0 0;
+  padding-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+/* Si hay aviso, el precio va justo debajo y no al fondo */
+.price-notice + .price {
+  margin-top: 0;
+}
+
 /* Etiqueta de precio mayorista (solo se muestra a usuarios B2B) */
 .b2b-tag {
   font-size: 11px;

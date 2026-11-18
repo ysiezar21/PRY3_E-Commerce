@@ -1,3 +1,5 @@
+import { getPricingForUser } from '../catalog/pricing';
+
 export const CART_ACTIONS = {
   ADD_ITEM: 'ADD_ITEM',
   INCREMENT: 'INCREMENT',
@@ -5,6 +7,7 @@ export const CART_ACTIONS = {
   REMOVE_ITEM: 'REMOVE_ITEM',
   CLEAR_CART: 'CLEAR_CART',
   SET_BRANCH: 'SET_BRANCH', // <-- NUEVO
+  REPRICE: 'REPRICE',
 };
 
 export const initialCartState = { items: [], branchId: null }; // <-- branchId
@@ -12,7 +15,7 @@ export const initialCartState = { items: [], branchId: null }; // <-- branchId
 export function cartReducer(state, action) {
   switch (action.type) {
     case CART_ACTIONS.ADD_ITEM: {
-      const { id, name, price, image, stock, minimumOrder = 1, multi_sede } = action.payload;
+      const { id, name, price, publicPrice, b2bInfo, image, stock, minimumOrder = 1, priceType, multi_sede } = action.payload;
       const exists = state.items.some((item) => item.id === id);
       
       return {
@@ -24,7 +27,7 @@ export function cartReducer(state, action) {
                 : item
             )
           : [...state.items, {
-              id, name, price, image, stock, minimumOrder, multi_sede,
+              id, name, price, publicPrice, b2bInfo, image, stock, minimumOrder, priceType, multi_sede,
               quantity: minimumOrder,
             }],
       };
@@ -55,6 +58,28 @@ export function cartReducer(state, action) {
 
     case CART_ACTIONS.CLEAR_CART:
       return initialCartState;
+
+    // Recalcula precio, tipo y mínimo de cada línea para el usuario que inició sesión.
+    // Si el nuevo mínimo es mayor, la cantidad sube hasta ese mínimo.
+    case CART_ACTIONS.REPRICE: {
+      const user = action.payload;
+      return {
+        ...state,
+        items: state.items.map((item) => {
+          const pricing = getPricingForUser(
+            { price: item.publicPrice ?? item.price, b2b_info: item.b2bInfo },
+            user
+          );
+          return {
+            ...item,
+            price: pricing.price,
+            priceType: pricing.priceType,
+            minimumOrder: pricing.minimumOrder,
+            quantity: Math.max(item.quantity, pricing.minimumOrder),
+          };
+        }),
+      };
+    }
 
     // cambia la sucursal y recorta cantidades al stock disponible.
     case CART_ACTIONS.SET_BRANCH: {
