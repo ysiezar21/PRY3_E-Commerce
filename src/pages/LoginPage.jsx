@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
 import { fetchUsers } from '../features/auth/authService';
 import { isValidRole, getRoleInfo } from '../features/auth/permissions';
@@ -9,7 +9,8 @@ import '../styles/pages/LoginPage.css';
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  
+  const location = useLocation();
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +47,8 @@ export default function LoginPage() {
     }
     setLoginError('');
     trackEvent('LOGIN', { role: user.role }, user);
-    navigate(user.role === 'ADMIN' ? '/admin' : '/');
+    // El admin va a su panel; los clientes vuelven a donde estaban (carrito o checkout).
+    navigate(user.role === 'ADMIN' ? '/admin' : (location.state?.from ?? '/'));
   };
 
   if (loading) return <div className="login-state">Cargando usuarios desde Algolia...</div>;
@@ -94,7 +96,7 @@ export default function LoginPage() {
               <p className="login-user-card__type">{getRoleInfo(user).userType}</p>
             )}
             <p className="login-user-card__email">{user.email}</p>
-            {user.company && <p className="login-user-card__company">🏢 {user.company}</p>}
+            {user.company && <p className="login-user-card__company">{user.company}</p>}
           </button>
         ))}
       </div>

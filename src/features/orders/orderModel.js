@@ -1,6 +1,7 @@
 import { getLineSubtotal } from '../cart/cartCalculations';
 import { PAYMENT_RESULTS } from '../../services/paymentSandbox';
 import { ORDER_RESULTS } from '../../services/orderSandbox';
+import { getBranchName } from '../branches/branches';
 
 // Estado de la orden y estado del pago son cosas distintas:
 // la orden dice si la compra quedó cerrada, el pago dice qué pasó con el cobro.
@@ -54,7 +55,9 @@ export function generateOrderNumber(date = new Date()) {
 
 // Construye la orden con una copia de los datos del carrito y del formulario.
 // Nace pendiente: el estado cambia cuando llega el resultado del pago.
-export function createOrder({ buyer, items, summary }) {
+export function createOrder({ buyer, items, summary, branchId }) {
+  const isPickup = buyer.deliveryMethod === 'pickup';
+
   const now = new Date();
 
   return {
@@ -66,11 +69,15 @@ export function createOrder({ buyer, items, summary }) {
       email: buyer.email.trim(),
       phone: buyer.phone.trim(),
     },
+    // Con retiro en sucursal no se guarda dirección.
     delivery: {
-      province: buyer.province,
-      canton: buyer.canton,
-      address: buyer.address.trim(),
-      notes: buyer.notes.trim(),
+      method: buyer.deliveryMethod,
+      branchId,
+      branchName: getBranchName(branchId),
+      province: isPickup ? '' : buyer.province,
+      canton: isPickup ? '' : buyer.canton,
+      address: isPickup ? '' : buyer.address.trim(),
+      notes: isPickup ? '' : buyer.notes.trim(),
     },
     items: items.map((item) => ({
       id: item.id,

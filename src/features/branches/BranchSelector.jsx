@@ -1,45 +1,66 @@
 /**
- * Selector de sucursal para el carrito.
+ * Selector de sucursal en el checkout.
  *
- * El usuario elige una sola sucursal; todos los productos se validan
- * contra ese stock. Se muestra cuántas sucursales tienen stock del
- * carrito completo (informativo).
+ * Muestra una tarjeta por sucursal. Solo se pueden elegir las que tienen
+ * stock para todo el carrito. Con una sucursal elegida, lista la
+ * disponibilidad de cada producto en ella.
  */
-import { BRANCHES, getBranchName } from './branches';
+import { Link } from 'react-router-dom';
+import { BRANCHES, getBranchName, hasStockFor } from './branches';
 
-export default function BranchSelector({ value, onChange, items }) {
-  // Cuántas sucursales tienen stock de TODOS los productos del carrito.
-  const availableBranches = BRANCHES.filter((branch) =>
-    items.every((item) => (item.multi_sede?.[branch.id] ?? 0) >= (item.minimumOrder || 1))
-  );
+export default function BranchSelector({ title, value, onChange, items, error }) {
+  const noBranchAvailable = BRANCHES.every((branch) => !hasStockFor(items, branch.id));
 
   return (
     <div className="branch-selector">
-      <label htmlFor="branch-select" className="branch-selector__label">
-        Sucursal de retiro o entrega: 
-      </label>
-      <select
-        id="branch-select"
-        className="branch-selector__select"
-        value={value ?? ''}
-        onChange={(e) => onChange(e.target.value || null)}
-      >
-        <option value="">Seleccione una sucursal…</option>
+      <p className="branch-selector__title">{title}</p>
+
+      <div className="branch-selector__options" id="checkout-branch" tabIndex={-1}>
         {BRANCHES.map((branch) => {
-          const hasStock = availableBranches.some((b) => b.id === branch.id);
+          const available = hasStockFor(items, branch.id);
+          const selected = value === branch.id;
           return (
-            <option key={branch.id} value={branch.id}>
-              {branch.name} {hasStock ? '' : '— stock insuficiente'}
-            </option>
+            <button
+              key={branch.id}
+              type="button"
+              className={`branch-card ${selected ? 'is-selected' : ''}`}
+              onClick={() => onChange(branch.id)}
+              disabled={!available}
+              aria-pressed={selected}
+            >
+              <span className="branch-card__name">{branch.name}</span>
+              <span className={`branch-card__status ${available ? '' : 'is-out'}`}>
+                {available ? 'Disponible' : 'Stock insuficiente'}
+              </span>
+            </button>
           );
         })}
-      </select>
+      </div>
 
-      {value && (
-        <p className="branch-selector__hint">
-          Productos desde <strong>{getBranchName(value)}</strong>. Los precios y
-          cantidades ya fueron ajustados al stock de esta sucursal.
+      {noBranchAvailable && (
+        <p className="branch-selector__error" role="alert">
+          Ninguna sucursal tiene stock para todo el pedido.{' '}
+          <Link to="/carrito">Ajuste las cantidades en el carrito</Link>.
         </p>
+      )}
+
+      {error && !noBranchAvailable && (
+        <p className="branch-selector__error" role="alert">{error}</p>
+      )}
+
+      {/* Disponibilidad de cada producto en la sucursal elegida */}
+      {value && (
+        <ul className="branch-selector__stock">
+          {items.map((item) => (
+            <li key={item.id}>
+              <span>{item.name}</span>
+              <span>
+                Disponible en {getBranchName(value)}: {item.multi_sede?.[value] ?? 0} · Cantidad:{' '}
+                {item.quantity}
+              </span>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

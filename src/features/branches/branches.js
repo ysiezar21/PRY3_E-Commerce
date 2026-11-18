@@ -32,6 +32,11 @@ export function getBranchesWithStock(product) {
   return BRANCHES.filter((b) => (product.multi_sede[b.id] ?? 0) > 0);
 }
 
+// La sucursal alcanza si tiene al menos la cantidad pedida de cada producto del carrito.
+export function hasStockFor(items, branchId) {
+  return items.every((item) => (item.multi_sede?.[branchId] ?? 0) >= item.quantity);
+}
+
 // Nombre legible de una sucursal por su id.
 export function getBranchName(branchId) {
   return BRANCHES.find((b) => b.id === branchId)?.name ?? '—';

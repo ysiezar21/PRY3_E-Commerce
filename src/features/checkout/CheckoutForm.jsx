@@ -2,17 +2,33 @@ import { useState } from 'react';
 import { LOCATIONS, PROVINCES } from './costaRicaLocations';
 import { validateForm } from './checkoutValidation';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import { hasStockFor } from '../branches/branches';
+import BranchSelector from '../branches/BranchSelector';
+import { DELIVERY_METHODS, DELIVERY_LABELS } from './delivery';
 
-// Formulario con los datos del comprador y la entrega.
+// Error de la sucursal: falta elegirla o no tiene stock para todo el pedido.
+function validateBranch(branchId, items) {
+  if (!branchId) return { branch: 'Seleccione una sucursal.' };
+  if (!hasStockFor(items, branchId)) {
+    return { branch: 'La sucursal elegida no tiene stock para todo el pedido. Elija otra.' };
+  }
+  return {};
+}
+
+// Formulario con el método de entrega, la sucursal y los datos del comprador.
 // El estado de los valores vive en CheckoutPage; aquí se validan y se editan.
-export default function CheckoutForm({ values, onChange, onSubmit }) {
+export default function CheckoutForm({ values, onChange, onSubmit, items, branchId, onBranchChange }) {
+  const { currentUser } = useAuth();
+  const isPickup = values.deliveryMethod === DELIVERY_METHODS.PICKUP;
+
   // touched: campos que el usuario ya visitó (para no mostrar errores antes de tiempo).
   // submitted: intento de envío; activa la visualización de todos los errores.
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
   // La validación se recalcula en cada render a partir de los valores actuales.
-  const errors = validateForm(values);
+  const errors = { ...validateBranch(branchId, items), ...validateForm(values) };
   const errorCount = Object.keys(errors).length;
 
   // Un error se muestra cuando el usuario ya salió del campo o intentó continuar
@@ -76,6 +92,42 @@ export default function CheckoutForm({ values, onChange, onSubmit }) {
         </p>
       )}
 
+      {/* Atajo para invitados: al volver, nombre y correo ya vienen llenos */}
+      {!currentUser && (
+        <p className="checkout-form__login">
+          ¿Ya tiene cuenta?{' '}
+          <Link to="/login" state={{ from: '/checkout' }}>
+            Iniciar sesión
+          </Link>
+        </p>
+      )}
+
+      <fieldset className="checkout-form__section">
+        <legend>Método de entrega</legend>
+
+        <div className="delivery-toggle" role="group" aria-label="Método de entrega">
+          {Object.values(DELIVERY_METHODS).map((method) => (
+            <button
+              key={method}
+              type="button"
+              className={`delivery-toggle__option ${values.deliveryMethod === method ? 'is-active' : ''}`}
+              aria-pressed={values.deliveryMethod === method}
+              onClick={() => onChange({ ...values, deliveryMethod: method })}
+            >
+              {DELIVERY_LABELS[method]}
+            </button>
+          ))}
+        </div>
+
+        <BranchSelector
+          title={isPickup ? 'Retirar en' : 'Enviar desde'}
+          value={branchId}
+          onChange={onBranchChange}
+          items={items}
+          error={submitted ? errors.branch : ''}
+        />
+      </fieldset>
+
       <fieldset className="checkout-form__section">
         <legend>Información del comprador</legend>
 
@@ -100,54 +152,57 @@ export default function CheckoutForm({ values, onChange, onSubmit }) {
         </div>
       </fieldset>
 
-      <fieldset className="checkout-form__section">
-        <legend>Información de entrega</legend>
+      {/* La dirección solo se pide para envío a domicilio */}
+      {!isPickup && (
+        <fieldset className="checkout-form__section">
+          <legend>Dirección de entrega</legend>
 
-        <div className="checkout-form__row">
-          <div className="checkout-form__field">
-            <label htmlFor="checkout-province">Provincia</label>
-            <select {...fieldProps('province')}>
-              <option value="">Seleccione una provincia</option>
-              {PROVINCES.map((province) => (
-                <option key={province} value={province}>
-                  {province}
-                </option>
-              ))}
-            </select>
-            {renderError('province')}
+          <div className="checkout-form__row">
+            <div className="checkout-form__field">
+              <label htmlFor="checkout-province">Provincia</label>
+              <select {...fieldProps('province')}>
+                <option value="">Seleccione una provincia</option>
+                {PROVINCES.map((province) => (
+                  <option key={province} value={province}>
+                    {province}
+                  </option>
+                ))}
+              </select>
+              {renderError('province')}
+            </div>
+
+            <div className="checkout-form__field">
+              <label htmlFor="checkout-canton">Cantón</label>
+              {/* El cantón depende de la provincia: deshabilitado hasta elegir una. */}
+              <select {...fieldProps('canton')} disabled={!values.province}>
+                <option value="">Seleccione un cantón</option>
+                {/* Fallback a [] si la provincia no tiene cantones mapeados. */}
+                {(LOCATIONS[values.province] ?? []).map((canton) => (
+                  <option key={canton} value={canton}>
+                    {canton}
+                  </option>
+                ))}
+              </select>
+              {renderError('canton')}
+            </div>
           </div>
 
           <div className="checkout-form__field">
-            <label htmlFor="checkout-canton">Cantón</label>
-            {/* El cantón depende de la provincia: deshabilitado hasta elegir una. */}
-            <select {...fieldProps('canton')} disabled={!values.province}>
-              <option value="">Seleccione un cantón</option>
-              {/* Fallback a [] si la provincia no tiene cantones mapeados. */}
-              {(LOCATIONS[values.province] ?? []).map((canton) => (
-                <option key={canton} value={canton}>
-                  {canton}
-                </option>
-              ))}
-            </select>
-            {renderError('canton')}
+            <label htmlFor="checkout-address">Dirección exacta</label>
+            <textarea {...fieldProps('address')} rows={3} autoComplete="street-address" />
+            {renderError('address')}
           </div>
-        </div>
 
-        <div className="checkout-form__field">
-          <label htmlFor="checkout-address">Dirección exacta</label>
-          <textarea {...fieldProps('address')} rows={3} autoComplete="street-address" />
-          {renderError('address')}
-        </div>
-
-        <div className="checkout-form__field">
-          <label htmlFor="checkout-notes">
-            Indicaciones adicionales para la entrega{' '}
-            <span className="checkout-form__optional">(opcional)</span>
-          </label>
-          <textarea {...fieldProps('notes')} rows={2} />
-          {renderError('notes')}
-        </div>
-      </fieldset>
+          <div className="checkout-form__field">
+            <label htmlFor="checkout-notes">
+              Indicaciones adicionales para la entrega{' '}
+              <span className="checkout-form__optional">(opcional)</span>
+            </label>
+            <textarea {...fieldProps('notes')} rows={2} />
+            {renderError('notes')}
+          </div>
+        </fieldset>
+      )}
 
 
       <div className="checkout-form__field checkout-form__terms">

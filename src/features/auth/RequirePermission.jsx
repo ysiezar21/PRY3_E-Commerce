@@ -1,9 +1,9 @@
 /**
  * Guard de rutas: solo muestra el contenido si el usuario actual tiene el
- * permiso indicado. Sin sesión invita a iniciarla; con sesión pero sin el
- * permiso, deniega el acceso con un mensaje claro.
+ * permiso indicado. Sin sesión lleva al inicio de sesión; con sesión pero
+ * sin el permiso, deniega el acceso con un mensaje claro.
  */
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { getRoleInfo } from './permissions';
 import StatusMessage from '../../components/StatusMessage';
@@ -13,30 +13,13 @@ export default function RequirePermission({ permission, area = 'esta sección', 
 
   if (can(permission)) return children;
 
+  // Sin sesión: directo al inicio de sesión, sin página de error.
   if (!currentUser) {
-    return (
-      <StatusMessage
-        icon="🔒"
-        title="Inicie sesión para continuar"
-        actions={
-          <>
-            <Link to="/login" className="status-message__button">
-              Iniciar sesión
-            </Link>
-            <Link to="/" className="status-message__button status-message__button--secondary">
-              Ir al catálogo
-            </Link>
-          </>
-        }
-      >
-        Necesita iniciar sesión con un usuario autorizado para entrar a {area}.
-      </StatusMessage>
-    );
+    return <Navigate to="/login" replace />;
   }
 
   return (
     <StatusMessage
-      icon="⛔"
       tone="error"
       title="Acceso denegado"
       actions={

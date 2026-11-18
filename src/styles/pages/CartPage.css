@@ -317,3 +317,15 @@
     text-align: left;
   }
 }
+/* Invitación a iniciar sesión (solo invitados) */
+.cart-summary__hint {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--text, #6b6b73);
+  text-align: center;
+}
+
+.cart-summary__hint a {
+  font-weight: 600;
+  color: var(--accent, #5b2eff);
+}

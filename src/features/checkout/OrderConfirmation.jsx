@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { formatCRC } from '../cart/formatCurrency';
 import { useAuth } from '../auth/AuthContext';
 import { trackEvent } from '../analytics/analyticsService';
+import { DELIVERY_LABELS, DELIVERY_METHODS } from './delivery';
 
 // Fecha larga con hora, en formato costarricense (ej. "16 de octubre de 2026, 14:30").
 const formatDate = (iso) =>
@@ -116,12 +117,25 @@ export default function OrderConfirmation({ order, onContinue }) {
         <div className="order-review__block">
           <h3>Entrega</h3>
           <dl className="order-review__data">
-            <dt>Provincia</dt>
-            <dd>{delivery.province}</dd>
-            <dt>Cantón</dt>
-            <dd>{delivery.canton}</dd>
-            <dt>Dirección</dt>
-            <dd>{delivery.address}</dd>
+            {/* Las órdenes viejas no tienen método: se asume envío. */}
+            <dt>Método</dt>
+            <dd>{DELIVERY_LABELS[delivery.method ?? DELIVERY_METHODS.SHIPPING]}</dd>
+            {delivery.branchName && (
+              <>
+                <dt>Sucursal</dt>
+                <dd>{delivery.branchName}</dd>
+              </>
+            )}
+            {delivery.method !== DELIVERY_METHODS.PICKUP && (
+              <>
+                <dt>Provincia</dt>
+                <dd>{delivery.province}</dd>
+                <dt>Cantón</dt>
+                <dd>{delivery.canton}</dd>
+                <dt>Dirección</dt>
+                <dd>{delivery.address}</dd>
+              </>
+            )}
             {/* Las indicaciones son opcionales: solo se muestran si existen. */}
             {delivery.notes && (
               <>
