@@ -287,3 +287,75 @@
     display: inline-block;
   }
 }
+
+/* ===== Accesos de la cuenta en celular ===== */
+
+.navbar__mobile-links {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .navbar__mobile-links {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
+    font-size: 13px;
+  }
+
+  .navbar__mobile-user {
+    color: rgba(255, 255, 255, 0.7);
+    margin-right: auto;
+  }
+
+  .navbar__mobile-links a {
+    color: #c4b5fd;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .navbar__mobile-links a:hover {
+    color: #fff;
+  }
+}
+
+/* ===== Celular: fila superior compacta para que nada se corte ===== */
+
+@media (max-width: 640px) {
+  .navbar {
+    grid-template-areas:
+      "brand actions"
+      "search search"
+      "links links";
+  }
+
+  .navbar__mobile-links {
+    grid-area: links;
+  }
+
+  .navbar__logo {
+    height: 48px;
+  }
+
+  .navbar__actions {
+    gap: 8px;
+  }
+
+  .navbar__user-zone {
+    gap: 8px;
+  }
+
+  .navbar__login-link {
+    padding: 7px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+/* Pantallas muy angostas: la ayuda sigue disponible en el pie de página */
+@media (max-width: 400px) {
+  .navbar__help {
+    display: none;
+  }
+}
