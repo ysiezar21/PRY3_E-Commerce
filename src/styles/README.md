@@ -2,7 +2,7 @@
 
 Esta carpeta contiene todos los estilos CSS de la aplicación, organizados de forma modular por componentes.
 
-## 📁 Estructura
+## Estructura
 
 ```
 styles/
@@ -18,7 +18,7 @@ styles/
     └── Pagination.css    # Estilos de la paginación
 ```
 
-## 🎯 Cómo usar
+## Cómo usar
 
 En `App.jsx` se importa el archivo `styles/index.js` que a su vez importa todos los estilos necesarios:
 
@@ -27,12 +27,12 @@ import "./styles/index.js";
 ```
 
 Esto asegura que:
-- ✅ Todos los estilos se cargan en el orden correcto
-- ✅ Los estilos globales se aplican primero
-- ✅ Los estilos de componentes sobrescriben según sea necesario
-- ✅ La modularización facilita el mantenimiento
+- Todos los estilos se cargan en el orden correcto
+- Los estilos globales se aplican primero
+- Los estilos de componentes sobrescriben según sea necesario
+- La modularización facilita el mantenimiento
 
-## 🔄 Variables CSS
+## Variables CSS
 
 Todas las variables CSS se definen en `src/index.css` (archivo global root):
 
@@ -46,7 +46,7 @@ Todas las variables CSS se definen en `src/index.css` (archivo global root):
 }
 ```
 
-## ✏️ Agregar nuevos estilos
+## Agregar nuevos estilos
 
 1. **Para un componente nuevo**, crea un archivo en `components/NombreComponente.css`
 2. **Importa el archivo** en `styles/index.js`
@@ -61,7 +61,7 @@ Ejemplo:
 import './components/MyNewComponent.css';
 ```
 
-## 🧹 Eliminado
+## Eliminado
 
 - `src/App.css` - Dividido en múltiples archivos modulares
 - `src/features/catalog/ProductDetail.css` - No existía en el proyecto
