@@ -202,6 +202,14 @@
   color: var(--danger, #c62828);
 }
 
+/* Aviso de precio no disponible o mayorista no aplicado */
+.product-price-notice {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #b45309;
+}
+
 .product-price-tag {
   margin: 0 0 4px;
   font-size: 12px;

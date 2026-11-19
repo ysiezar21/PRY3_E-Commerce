@@ -200,6 +200,21 @@
 
 /* ===== Avisos de reglas B2B y stock de sucursal ===== */
 
+/* Tipo de precio aplicado en la línea (B2C / B2B) */
+.cart-line__price-type {
+  margin: 2px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cart-line__price-type--b2c {
+  color: #4338ca;
+}
+
+.cart-line__price-type--b2b {
+  color: #0284c7;
+}
+
 .cart-line__min-order {
   margin: 4px 0 0;
   font-size: 11px;

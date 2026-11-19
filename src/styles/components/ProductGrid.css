@@ -50,3 +50,11 @@
     gap: 8px;
   }
 }
+
+/* Celular angosto: 2 columnas para que nombres y botones no queden apretados */
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}

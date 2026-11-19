@@ -18,30 +18,24 @@ export function getShippingCost(subtotal) {
 }
 
 // Calcula el resumen completo de compra a partir de los items del carrito.
-export function getCartSummary(items) {
+// withShipping = false para retiro en sucursal (sin costo de envío).
+export function getCartSummary(items, withShipping = true) {
   const subtotal = getCartSubtotal(items);
   const iva = subtotal * IVA_RATE;
-  const shipping = getShippingCost(subtotal);
+  const shipping = withShipping ? getShippingCost(subtotal) : 0;
   const total = subtotal + iva + shipping;
 
   return { subtotal, iva, shipping, total };
 }
 
-/**
- * NUEVO: Valida que los productos B2B en el carrito cumplan con la cantidad mínima.
- * Se usará en el Checkout para bloquear la compra si el usuario bajó la cantidad.
- */
+// Revisa el pedido mínimo B2B. El carrito y el checkout la usan para impedir continuar.
 export function validateB2BConditions(items) {
-  const invalidItems = items.filter(
-    (item) => item.minimumOrder && item.minimumOrder > 1 && item.quantity < item.minimumOrder
-  );
-  
-  if (invalidItems.length > 0) {
-    return {
-      isValid: false,
-      message: `El producto "${invalidItems[0].name}" requiere un mínimo de ${invalidItems[0].minimumOrder} unidades para precio mayorista.`
-    };
-  }
-  
-  return { isValid: true, message: '' };
+  const invalid = items.find((item) => item.quantity < (item.minimumOrder || 1));
+
+  if (!invalid) return { isValid: true, message: '' };
+
+  return {
+    isValid: false,
+    message: `"${invalid.name}" requiere un mínimo de ${invalid.minimumOrder} unidades para precio mayorista.`,
+  };
 }

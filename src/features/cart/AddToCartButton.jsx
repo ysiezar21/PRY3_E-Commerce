@@ -9,17 +9,20 @@
 import { useState, useRef, useEffect } from 'react';
 import { useCart } from './CartContext';
 import { useAuth } from '../auth/AuthContext';
+import { PERMISSIONS } from '../auth/permissions';
 import { trackEvent } from '../analytics/analyticsService';
 
 export default function AddToCartButton({ 
   product, 
   appliedPrice, 
-  minimumOrder = 1, 
-  className = '' 
+  minimumOrder = 1,
+  priceType,
+  priceAvailable = true,
+  className = ''
 }) {
   const { addItem, items } = useCart();
 
-  const { currentUser } = useAuth();
+  const { currentUser, can } = useAuth();
 
   // added: controla el feedback visual "✓ Agregado".
   // timerRef: guarda el timeout para poder limpiarlo al desmontar o al
@@ -30,6 +33,30 @@ export default function AddToCartButton({
   // Al desmontar, cancelamos el timeout pendiente para evitar setState
   // sobre un componente que ya no está montado.
   useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  // El administrador solo consulta el catálogo, no compra.
+  // (El invitado sí compra, como cliente B2C.)
+  if (!can(PERMISSIONS.ADD_TO_CART)) {
+    return (
+      <button
+        type="button"
+        className={`add-to-cart-btn ${className}`}
+        disabled
+        title="El rol Administrador no realiza compras"
+      >
+        Solo consulta
+      </button>
+    );
+  }
+
+  // Sin un precio válido no se puede vender el producto.
+  if (!priceAvailable) {
+    return (
+      <button type="button" className={`add-to-cart-btn ${className}`} disabled>
+        No disponible
+      </button>
+    );
+  }
 
   // Unidades del producto ya presentes en el carrito (0 si no está).
   const inCart = items.find((item) => item.id === product.id)?.quantity ?? 0;
@@ -47,8 +74,8 @@ export default function AddToCartButton({
     e.stopPropagation();
     if (outOfStock || noMoreStock || insufficientStock) return;
 
-    // Enviamos el precio calculado (B2C o B2B) y la cantidad mínima
-    addItem(product, appliedPrice, minimumOrder);
+    // Enviamos el precio calculado, la cantidad mínima y el tipo de precio (B2C o B2B)
+    addItem(product, appliedPrice, minimumOrder, priceType);
     trackEvent('ADD_TO_CART', { productId: product.id, name: product.name }, currentUser);
     setAdded(true);
 

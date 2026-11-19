@@ -1,10 +1,14 @@
 import { getLineSubtotal } from '../cart/cartCalculations';
 import { formatCRC } from '../cart/formatCurrency';
+import { getBranchName } from '../branches/branches';
+import { DELIVERY_LABELS, DELIVERY_METHODS } from './delivery';
+import CommercialTerms from './CommercialTerms';
 
 // Resumen final de la compra: productos, datos del comprador y entrega, y totales.
 // Los valores vienen del carrito, aquí no se recalcula nada.
-export default function OrderReview({ items, buyer, summary, onEdit, editDisabled, children }) {
+export default function OrderReview({ items, buyer, user, branchId, summary, onEdit, editDisabled, children }) {
   const { subtotal, iva, shipping, total } = summary;
+  const isShipping = buyer.deliveryMethod === DELIVERY_METHODS.SHIPPING;
 
   return (
     <section className="order-review">
@@ -23,6 +27,7 @@ export default function OrderReview({ items, buyer, summary, onEdit, editDisable
               <tr>
                 <th scope="col">Producto</th>
                 <th scope="col">Cantidad</th>
+                <th scope="col">Tipo de precio</th>
                 <th scope="col">Precio unitario</th>
                 <th scope="col">Subtotal</th>
               </tr>
@@ -31,10 +36,11 @@ export default function OrderReview({ items, buyer, summary, onEdit, editDisable
               {/* El subtotal por línea se deriva; el carrito no lo guarda. */}
               {items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}</td>
-                  <td>{formatCRC(item.price)}</td>
-                  <td>{formatCRC(getLineSubtotal(item))}</td>
+                  <td data-label="Producto">{item.name}</td>
+                  <td data-label="Cantidad">{item.quantity}</td>
+                  <td data-label="Tipo de precio">{item.priceType ?? 'B2C'}</td>
+                  <td data-label="Precio unitario">{formatCRC(item.price)}</td>
+                  <td data-label="Subtotal">{formatCRC(getLineSubtotal(item))}</td>
                 </tr>
               ))}
             </tbody>
@@ -65,6 +71,8 @@ export default function OrderReview({ items, buyer, summary, onEdit, editDisable
         </dl>
       </div>
 
+      <CommercialTerms user={user} lines={items} />
+
       <div className="order-review__columns">
         <div className="order-review__block">
           <h3>Comprador</h3>
@@ -82,14 +90,23 @@ export default function OrderReview({ items, buyer, summary, onEdit, editDisable
         <div className="order-review__block">
           <h3>Entrega</h3>
           <dl className="order-review__data">
-            <dt>Provincia</dt>
-            <dd>{buyer.province}</dd>
-            <dt>Cantón</dt>
-            <dd>{buyer.canton}</dd>
-            <dt>Dirección</dt>
-            <dd>{buyer.address.trim()}</dd>
+            <dt>Método</dt>
+            <dd>{DELIVERY_LABELS[buyer.deliveryMethod]}</dd>
+            <dt>{isShipping ? 'Sale de' : 'Retiro en'}</dt>
+            <dd>Sucursal {getBranchName(branchId)}</dd>
+            {/* La dirección solo aplica al envío a domicilio. */}
+            {isShipping && (
+              <>
+                <dt>Provincia</dt>
+                <dd>{buyer.province}</dd>
+                <dt>Cantón</dt>
+                <dd>{buyer.canton}</dd>
+                <dt>Dirección</dt>
+                <dd>{buyer.address.trim()}</dd>
+              </>
+            )}
             {/* Las indicaciones son opcionales: solo se muestran si hay texto. */}
-            {buyer.notes.trim() && (
+            {isShipping && buyer.notes.trim() && (
               <>
                 <dt>Indicaciones</dt>
                 <dd>{buyer.notes.trim()}</dd>

@@ -1,6 +1,8 @@
 import { getLineSubtotal } from '../cart/cartCalculations';
 import { PAYMENT_RESULTS } from '../../services/paymentSandbox';
 import { ORDER_RESULTS } from '../../services/orderSandbox';
+import { getBranchName } from '../branches/branches';
+import { PRICE_TYPES } from '../catalog/pricing';
 
 // Estado de la orden y estado del pago son cosas distintas:
 // la orden dice si la compra quedó cerrada, el pago dice qué pasó con el cobro.
@@ -52,31 +54,86 @@ export function generateOrderNumber(date = new Date()) {
   return `ORD-${year}${month}${day}-${code}`;
 }
 
+// Rol que se guarda en la orden cuando se compra sin iniciar sesión.
+// No es un rol de la aplicación (no puede iniciar sesión): solo identifica al invitado.
+export const GUEST_ROLE = 'GUEST';
+
+// Datos del usuario que se guardan en la orden: id, nombre, correo, rol y,
+// solo para B2B, la empresa. El invitado no tiene id y usa lo escrito en el formulario.
+export function buildOrderUser(currentUser, buyer) {
+  if (!currentUser) {
+    return {
+      id: null,
+      name: buyer.fullName.trim(),
+      email: buyer.email.trim(),
+      role: GUEST_ROLE,
+      company: null,
+    };
+  }
+
+  return {
+    id: currentUser.objectID,
+    name: currentUser.name,
+    email: currentUser.email ?? buyer.email.trim(),
+    role: currentUser.role,
+    company: currentUser.role === 'B2B' ? (currentUser.company ?? null) : null,
+  };
+}
+
+// Resume en qué condiciones comerciales se hizo la compra, a partir de las líneas
+// de la orden (o del carrito): qué lista de precios se aplicó y qué mínimos B2B cumplen.
+//   B2C   → todas las líneas con precio público.
+//   B2B   → todas con precio mayorista.
+//   MIXED → un B2B con algún producto sin precio mayorista válido (se cobró el público).
+export function getCommercialConditions(lines) {
+  const b2bLines = lines.filter((line) => (line.priceType ?? PRICE_TYPES.B2C) === PRICE_TYPES.B2B);
+
+  let priceList = 'MIXED';
+  if (b2bLines.length === 0) priceList = PRICE_TYPES.B2C;
+  else if (b2bLines.length === lines.length) priceList = PRICE_TYPES.B2B;
+
+  const minimums = b2bLines
+    .filter((line) => (line.minimumOrder ?? 1) > 1)
+    .map((line) => ({ name: line.name, minimumOrder: line.minimumOrder, quantity: line.quantity }));
+
+  return { priceList, minimums };
+}
+
 // Construye la orden con una copia de los datos del carrito y del formulario.
 // Nace pendiente: el estado cambia cuando llega el resultado del pago.
-export function createOrder({ buyer, items, summary }) {
+export function createOrder({ buyer, user, items, summary, branchId }) {
+  const isPickup = buyer.deliveryMethod === 'pickup';
+
   const now = new Date();
 
   return {
     orderNumber: generateOrderNumber(now),
     date: now.toISOString(),
     currency: CURRENCY,
+    user: { ...user },
     buyer: {
       fullName: buyer.fullName.trim(),
       email: buyer.email.trim(),
       phone: buyer.phone.trim(),
     },
+    // Con retiro en sucursal no se guarda dirección.
     delivery: {
-      province: buyer.province,
-      canton: buyer.canton,
-      address: buyer.address.trim(),
-      notes: buyer.notes.trim(),
+      method: buyer.deliveryMethod,
+      branchId,
+      branchName: getBranchName(branchId),
+      province: isPickup ? '' : buyer.province,
+      canton: isPickup ? '' : buyer.canton,
+      address: isPickup ? '' : buyer.address.trim(),
+      notes: isPickup ? '' : buyer.notes.trim(),
     },
     items: items.map((item) => ({
       id: item.id,
       name: item.name,
       quantity: item.quantity,
       unitPrice: item.price,
+      // Condiciones comerciales de la línea: qué precio se aplicó y el mínimo B2B.
+      priceType: item.priceType ?? PRICE_TYPES.B2C,
+      minimumOrder: item.minimumOrder ?? 1,
       subtotal: roundMoney(getLineSubtotal(item)),
     })),
     subtotal: roundMoney(summary.subtotal),

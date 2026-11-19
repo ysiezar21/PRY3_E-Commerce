@@ -3,6 +3,8 @@ import { CartContext } from './CartContext';
 import { cartReducer, CART_ACTIONS } from './cartReducer';
 import { loadCart, saveCart } from './cartStorage';
 import { useAuth } from '../auth/AuthContext';
+import { can, PERMISSIONS } from '../auth/permissions';
+import { PRICE_TYPES } from '../catalog/pricing';
 
 /**
  * Provider del carrito.
@@ -23,13 +25,19 @@ export default function CartProvider({ children }) {
     saveCart(state);
   }, [state]);
 
-  // si cambia el usuario (login o logout), reiniciamos el carrito
+  // Si cambia el usuario (login o logout), se recalculan los precios o se vacía el carrito
   useEffect(() => {
     const currentId = currentUser?.objectID ?? null;
     
-    // Solo limpiamos si realmente cambió el usuario, no en el montaje inicial
+    // Solo actuamos si realmente cambió el usuario, no en el montaje inicial
     if (prevUserIdRef.current !== currentId) {
-      dispatch({ type: CART_ACTIONS.CLEAR_CART });
+      // Al iniciar sesión como cliente, el carrito se conserva con los precios de su rol.
+      // Al cerrar sesión o entrar como admin (no compra), se vacía.
+      if (currentUser && can(currentUser, PERMISSIONS.ADD_TO_CART)) {
+        dispatch({ type: CART_ACTIONS.REPRICE, payload: currentUser });
+      } else {
+        dispatch({ type: CART_ACTIONS.CLEAR_CART });
+      }
       prevUserIdRef.current = currentId;
     }
   }, [currentUser]);
@@ -38,16 +46,19 @@ export default function CartProvider({ children }) {
   // addItem normaliza el producto al shape mínimo que guarda el carrito:
   // solo id, name, price, image y stock, para no inflar localStorage.
   const addItem = useCallback(
-    (product, appliedPrice, minimumOrder = 1) =>
+    (product, appliedPrice, minimumOrder = 1, priceType = PRICE_TYPES.B2C) =>
       dispatch({
         type: CART_ACTIONS.ADD_ITEM,
         payload: {
           id: product.id,
           name: product.name,
           price: appliedPrice || product.price, // <-- Guarda el precio B2B o B2C
+          publicPrice: product.price, // <-- Para recalcular si cambia el rol
+          b2bInfo: product.b2b_info, // <-- Para recalcular si cambia el rol
           image: product.images?.[0] ?? null,
           stock: product.stock,
           minimumOrder, // <-- Guarda la regla para validar después
+          priceType, // <-- B2C o B2B
           multi_sede: product.multi_sede, // <-- Guarda el stock por sucursal
         },
       }),
